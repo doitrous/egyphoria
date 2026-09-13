@@ -101,3 +101,14 @@
 .behind-founders { margin-top: 28px; }
 .behind-founders p { font-family: var(--serif); font-size: 25px; margin-top: 8px; }
 .behind-founders p > span { color: var(--wine); margin: 0 10px; }
+/* Shared outlined link mark, matching the supplied reference. */
+.link-icon { display: inline-block; width: 20px; height: 20px; flex: 0 0 20px; vertical-align: middle; }
+.button > span:has(.link-icon), .text-link > span:has(.link-icon) { display: inline-flex; align-items: center; }
+.trip-arrow .link-icon { width: 18px; height: 18px; }
+.collection-note > a { display: inline-flex; vertical-align: middle; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; }
+@media (max-width: 760px) { .behind-founders p { font-size: 22px; } .behind-founders p > span { margin: 0 5px; } }
+/* HD masters are tightly framed; display the complete artwork without screenshot crops. */
+.logo-window { display: flex; align-items: center; }
+.logo-window img { position: static; width: 100%; height: 100%; max-width: 100%; object-fit: contain; }
+.behind-symbol { aspect-ratio: 1; }
+.behind-symbol img { position: static; width: 100%; height: 100%; max-width: 100%; object-fit: contain; }
