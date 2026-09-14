@@ -178,6 +178,13 @@
     "travelDay": "Travel from {from} to {to}. Keep this day flexible for the transfer and settling in; transport and timing to be arranged.",
     "freeDay": "A free day in {place}: revisit a favorite place or add your own experience."
   },
+  "booking": {
+    "title": "Thank you — your journey awaits",
+    "intro": "We've received your booking and our team will be in touch shortly to confirm the details and tailor everything to you.",
+    "ref": "Reference",
+    "home": "Back to Egyphoria",
+    "questions": "Any questions? Just reply to your confirmation email and we'll help."
+  },
   "journal": {
     "eyebrow": "THE EGYPHORIA JOURNAL",
     "title": "Stories, guides & little discoveries.",

@@ -60,7 +60,7 @@ function alternates(makeUrl) {
 // ---- shared chrome -------------------------------------------------------
 const ICON = '<svg class="link-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" focusable="false"><path d="M14 3h7v7M21 3 10 14M10 3H3v18h18v-7"/></svg>';
 
-function head({ lang, t, title, description, url, image = '/assets/og-image.jpg', makeUrl, jsonld = '', type = 'website' }) {
+function head({ lang, t, title, description, url, image = '/assets/og-image.jpg', makeUrl, jsonld = '', type = 'website', robots = 'index, follow' }) {
   const L = languages.find(l => l.code === lang);
   return `<!doctype html>
 <html lang="${lang}" dir="${L.dir}">
@@ -72,7 +72,7 @@ function head({ lang, t, title, description, url, image = '/assets/og-image.jpg'
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="canonical" href="${abs(url)}">
-  <meta name="author" content="Egyphoria"><meta name="robots" content="index, follow">
+  <meta name="author" content="Egyphoria"><meta name="robots" content="${robots}">
   ${makeUrl ? alternates(makeUrl) : ''}
   <meta property="og:type" content="${type}"><meta property="og:site_name" content="Egyphoria">
   <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
@@ -316,6 +316,26 @@ ${scripts()}
   write(join(prefix(lang), 'photography', 'index.html'), html);
 }
 
+// booking return page (where PayTabs sends the customer after payment).
+function bookingPage(lang) {
+  const strings = stringsFor(lang), t = makeT(strings);
+  const html = `${head({ lang, t, title: `${t('booking.title')} — Egyphoria`, description: t('booking.intro'), url: `${prefix(lang)}/booking/complete/`, robots: 'noindex, nofollow' })}
+<body>
+${header(lang, t, homeUrl)}
+<main id="main" class="section article" style="text-align:center">
+  <div class="plan-done-mark" aria-hidden="true">✧</div>
+  <h1>${esc(t('booking.title'))}</h1>
+  <p style="font-size:1.15rem;color:var(--muted);max-width:560px;margin:16px auto 0">${esc(t('booking.intro'))}</p>
+  <p id="booking-ref" class="article-meta" style="margin-top:22px"></p>
+  <p style="margin-top:20px"><a class="button" href="${homeUrl(lang)}">${esc(t('booking.home'))} <span aria-hidden="true">→</span></a></p>
+  <p style="color:var(--muted);margin-top:26px;font-size:14px">${esc(t('booking.questions'))}</p>
+</main>
+${footer(lang, t)}
+<script>(function(){var p=new URLSearchParams(location.search);var r=p.get('tranRef')||p.get('tran_ref')||p.get('cart_id');if(r)document.getElementById('booking-ref').textContent=${JSON.stringify(t('booking.ref'))}+': '+r;})();</script>
+</body></html>`;
+  write(join(prefix(lang), 'booking', 'complete', 'index.html'), html);
+}
+
 // ---- sitemap + robots ----------------------------------------------------
 function sitemap() {
   const entries = [];
@@ -360,7 +380,7 @@ const DIST_ASSETS_SRC = join(DIST, 'assets'); // images already live here; prese
 // ---- run -----------------------------------------------------------------
 // Preserve dist/assets; clear generated HTML/js to avoid stale files.
 for (const f of ['index.html', 'photography.html', 'sitemap.xml', 'robots.txt', 'data.mjs', 'app.js', 'motion.js']) { const p = join(DIST, f); if (existsSync(p)) rmSync(p); }
-for (const d of ['js', 'trips', 'journal', 'photography', ...languages.filter(l => l.code !== defaultLang).map(l => l.code)]) { const p = join(DIST, d); if (existsSync(p)) rmSync(p, { recursive: true, force: true }); }
+for (const d of ['js', 'trips', 'journal', 'photography', 'booking', ...languages.filter(l => l.code !== defaultLang).map(l => l.code)]) { const p = join(DIST, d); if (existsSync(p)) rmSync(p, { recursive: true, force: true }); }
 
 copyStatics();
 for (const { code } of languages) {
@@ -369,6 +389,7 @@ for (const { code } of languages) {
   journalIndex(code);
   for (const p of postsFor(code)) journalPost(code, p);
   photographyPage(code);
+  bookingPage(code);
 }
 sitemap();
 console.log(`Built ${languages.length} languages × ${trips.length} trips + journal + home. → dist/`);
