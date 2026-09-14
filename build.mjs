@@ -14,6 +14,8 @@ const read = (p) => readFileSync(p, 'utf8');
 const json = (p) => JSON.parse(read(p));
 const write = (rel, content) => { const p = join(DIST, rel); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, content); };
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// truthful lastmod for sitemap entries: a content file's own mtime, in YYYY-MM-DD.
+const fileLastmod = (p) => statSync(p).mtime.toISOString().slice(0, 10);
 
 // ---- i18n ----------------------------------------------------------------
 const enStrings = json(join(SRC, 'i18n', 'en.json'));
@@ -249,8 +251,9 @@ function loadPosts() {
   const dir = join(SRC, 'content', 'blog');
   if (!existsSync(dir)) return [];
   return readdirSync(dir).filter(f => f.endsWith('.md')).map(f => {
-    const { data, body } = frontMatter(read(join(dir, f)));
-    return { slug: data.slug || f.replace(/\.md$/, ''), ...data, body };
+    const p = join(dir, f);
+    const { data, body } = frontMatter(read(p));
+    return { slug: data.slug || f.replace(/\.md$/, ''), ...data, body, lastmod: data.date || fileLastmod(p) };
   }).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
 const ALL_POSTS = loadPosts();
@@ -337,16 +340,25 @@ ${footer(lang, t)}
 }
 
 // ---- sitemap + robots ----------------------------------------------------
+// Content that backs each entry has no per-record date of its own, so its
+// lastmod is that content file's own mtime (truthful, not invented).
+const TRIPS_LASTMOD = fileLastmod(join(SRC, 'trips.mjs'));
+const PHOTOGRAPHY_LASTMOD = fileLastmod(join(SRC, 'content', 'photography.html'));
+const JOURNAL_INDEX_LASTMOD = ALL_POSTS.length
+  ? ALL_POSTS.reduce((max, p) => (p.lastmod > max ? p.lastmod : max), ALL_POSTS[0].lastmod)
+  : fileLastmod(join(SRC, 'content', 'blog'));
+
 function sitemap() {
   const entries = [];
-  const add = (makeUrl, priority, changefreq) => entries.push({ makeUrl, priority, changefreq });
-  add(homeUrl, '1.0', 'weekly');
-  for (const tr of trips) add((l) => tripUrl(l, tr.id), '0.8', 'monthly');
-  add(journalUrl, '0.6', 'weekly');
-  for (const p of ALL_POSTS.filter(p => (p.lang || 'en') === 'en')) add((l) => postUrl(l, p.slug), '0.6', 'monthly');
-  add(photoUrl, '0.2', 'yearly');
-  const urls = entries.map(({ makeUrl, priority, changefreq }) => languages.map(l => `  <url>
+  const add = (makeUrl, priority, changefreq, lastmod) => entries.push({ makeUrl, priority, changefreq, lastmod });
+  add(homeUrl, '1.0', 'weekly', TRIPS_LASTMOD);
+  for (const tr of trips) add((l) => tripUrl(l, tr.id), '0.8', 'monthly', TRIPS_LASTMOD);
+  add(journalUrl, '0.6', 'weekly', JOURNAL_INDEX_LASTMOD);
+  for (const p of ALL_POSTS.filter(p => (p.lang || 'en') === 'en')) add((l) => postUrl(l, p.slug), '0.6', 'monthly', p.lastmod);
+  add(photoUrl, '0.2', 'yearly', PHOTOGRAPHY_LASTMOD);
+  const urls = entries.map(({ makeUrl, priority, changefreq, lastmod }) => languages.map(l => `  <url>
     <loc>${abs(makeUrl(l.code))}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
 ${languages.map(a => `    <xhtml:link rel="alternate" hreflang="${a.code}" href="${abs(makeUrl(a.code))}"/>`).join('\n')}
@@ -357,7 +369,31 @@ ${languages.map(a => `    <xhtml:link rel="alternate" hreflang="${a.code}" href=
 ${urls}
 </urlset>
 `);
-  write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${abs('/sitemap.xml')}\n`);
+  // General allow covers Googlebot/Bingbot/etc.; explicit blocks for AI
+  // scrapers that ignore a bare `*` disallow but honour their own UA line.
+  write('robots.txt', `User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+Sitemap: ${abs('/sitemap.xml')}
+`);
 }
 
 // ---- assets copy ---------------------------------------------------------

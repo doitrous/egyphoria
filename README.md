@@ -12,6 +12,16 @@ node build.mjs
 Everything under `dist/` is generated. Source of truth lives in `src/`.
 Edit `src/`, run the build, commit `dist/`.
 
+## Test
+
+```bash
+node build.mjs && node smoke-test.mjs
+```
+
+A zero-dependency SEO smoke test: `dist/sitemap.xml` has at least one
+absolute `https://` `<loc>` and a `<lastmod>`, `dist/robots.txt` has a
+`Sitemap:` line, and the homepage has an `<h1` and `rel="canonical"`.
+
 ## Where things live
 
 | I want to…                    | Edit                                         |
@@ -51,7 +61,10 @@ backlinks from articles to trip pages (good for SEO).
 ## SEO
 
 Generated automatically: `sitemap.xml` (all languages + `hreflang`
-alternates), `robots.txt`, canonical URLs, Open Graph / Twitter cards, and
+alternates + `lastmod`, from a post's front-matter `date` or otherwise its
+content file's mtime), `robots.txt` (explicit allow/disallow per crawler,
+including GPTBot/ClaudeBot allowed and CCBot/Bytespider/Meta-ExternalAgent/
+Amazonbot disallowed), canonical URLs, Open Graph / Twitter cards, and
 JSON-LD (`TravelAgency`, `TouristTrip`/`Offer`, `Blog`, `BlogPosting`).
 After deploy, submit `https://egyphoria.com/sitemap.xml` in Google Search
 Console.
