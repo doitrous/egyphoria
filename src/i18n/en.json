@@ -120,7 +120,8 @@
     "journal": "Journal",
     "rights": "All rights reserved.",
     "photography": "Photography",
-    "madeWith": "Made with a love for Egypt."
+    "madeWith": "Made with a love for Egypt.",
+    "tools": "Trip cost calculator"
   },
   "trip": {
     "back": "Back to all journeys",
@@ -196,5 +197,14 @@
     "share": "Share this story",
     "cta": "Ready to see it for yourself?",
     "ctaButton": "Design my journey"
+  },
+  "tools": {
+    "methodology": "How we calculate this",
+    "dataSource": "Data source:",
+    "asOf": "as of",
+    "faq": "Questions",
+    "embedTitle": "Embed this calculator",
+    "embedIntro": "Paste this on your own site. It works anywhere HTML does — please keep the credit link.",
+    "embedBack": "Full calculator, methodology and FAQ at {site}"
   }
 }

@@ -14,8 +14,18 @@ const read = (p) => readFileSync(p, 'utf8');
 const json = (p) => JSON.parse(read(p));
 const write = (rel, content) => { const p = join(DIST, rel); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, content); };
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// text-node escape (no quote-entities): for the embed <textarea> body, where quotes are valid
+// literal characters and escaping them would mangle the copy-pasted snippet (e.g. rel="nofollow").
+const escText = (s) => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 // truthful lastmod for sitemap entries: a content file's own mtime, in YYYY-MM-DD.
 const fileLastmod = (p) => statSync(p).mtime.toISOString().slice(0, 10);
+
+// ---- tools (embeddable calculators) --------------------------------------
+// One entry per language, same shape as the site-template embed kit's content/tools/*.json.
+// Languages without their own translation fall back to English, same as journal posts do.
+const TRIP_COST_FILE = join(SRC, 'content', 'tools', 'trip-cost.json');
+const TRIP_COST_CONTENT = json(TRIP_COST_FILE);
+const toolFor = (lang) => TRIP_COST_CONTENT[lang] || TRIP_COST_CONTENT[defaultLang];
 
 // ---- i18n ----------------------------------------------------------------
 const enStrings = json(join(SRC, 'i18n', 'en.json'));
@@ -51,6 +61,8 @@ const tripUrl = (lang, id) => `${prefix(lang)}/trips/${id}/`;
 const journalUrl = (lang) => `${prefix(lang)}/journal/`;
 const postUrl = (lang, slug) => `${prefix(lang)}/journal/${slug}/`;
 const photoUrl = (lang) => `${prefix(lang)}/photography/`;
+const toolUrl = (lang) => `${prefix(lang)}/tools/trip-cost/`;
+const toolEmbedUrl = (lang) => `${prefix(lang)}/tools/trip-cost/embed/`;
 const abs = (path) => site.domain + path;
 
 // hreflang alternates for a given "page key" function
@@ -115,7 +127,7 @@ function header(lang, t, makeUrl) {
 
 function footer(lang, t) {
   const h = homeUrl(lang);
-  return `<footer class="footer"><a href="${h}" class="brand" aria-label="${esc(t('nav.home'))}"><span class="logo-window"><img src="/assets/egyphoria-wordmark-hd.png" alt="Egyphoria" loading="lazy"></span></a><p>${esc(t('footer.tagline'))}</p><nav aria-label="Footer navigation"><a href="${h}#journeys">${esc(t('footer.explore'))}</a><a href="${h}#behind-egyphoria">${esc(t('footer.behind'))}</a><a href="${journalUrl(lang)}">${esc(t('footer.journal'))}</a><a href="${h}#builder">${esc(t('footer.builder'))}</a></nav><div class="footer-bottom"><span>© <span id="year">${new Date().getFullYear()}</span> Egyphoria. ${esc(t('footer.rights'))}</span><span><a href="${photoUrl(lang)}">${esc(t('footer.photography'))}</a> · ${esc(t('footer.madeWith'))}</span></div></footer>`;
+  return `<footer class="footer"><a href="${h}" class="brand" aria-label="${esc(t('nav.home'))}"><span class="logo-window"><img src="/assets/egyphoria-wordmark-hd.png" alt="Egyphoria" loading="lazy"></span></a><p>${esc(t('footer.tagline'))}</p><nav aria-label="Footer navigation"><a href="${h}#journeys">${esc(t('footer.explore'))}</a><a href="${h}#behind-egyphoria">${esc(t('footer.behind'))}</a><a href="${journalUrl(lang)}">${esc(t('footer.journal'))}</a><a href="${toolUrl(lang)}">${esc(t('footer.tools'))}</a><a href="${h}#builder">${esc(t('footer.builder'))}</a></nav><div class="footer-bottom"><span>© <span id="year">${new Date().getFullYear()}</span> Egyphoria. ${esc(t('footer.rights'))}</span><span><a href="${photoUrl(lang)}">${esc(t('footer.photography'))}</a> · ${esc(t('footer.madeWith'))}</span></div></footer>`;
 }
 
 // plan dialog (edit → details → done). Shared on home + trip pages.
@@ -339,6 +351,88 @@ ${footer(lang, t)}
   write(join(prefix(lang), 'booking', 'complete', 'index.html'), html);
 }
 
+// ---- tools (embeddable calculators) --------------------------------------
+// Mirrors site-template's packages/tools/embed.ts embedSnippet() exactly: an iframe to the
+// embed page, a followed link back to the tool page, a nofollow credit link home, and an
+// origin-scoped resize <script> that grows the iframe to the height the embed page posts.
+function embedSnippet({ origin, toolPageUrl, embedPageUrl, title, siteName }) {
+  return [
+    `<iframe src="${embedPageUrl}" title="${esc(title)}" width="100%" height="480" style="border:0;max-width:100%" loading="lazy"></iframe>`,
+    `<p><a href="${toolPageUrl}">${esc(title)}</a> — a free tool by <a href="${origin}/" rel="nofollow">${esc(siteName)}</a></p>`,
+    `<script>addEventListener("message",function(e){var h=Number(e.data&&e.data.seoToolHeight);if(!h)return;document.querySelectorAll('iframe[src^="${origin}/"]').forEach(function(f){if(f.contentWindow===e.source)f.style.height=h+"px"})})</script>`,
+  ].join('\n');
+}
+
+// WebApplication + FAQPage JSON-LD, mirroring site-template's toolJsonLd()/faqPageJsonLd().
+function toolJsonLd(tool, url, lang) {
+  return {
+    '@context': 'https://schema.org', '@type': 'WebApplication', '@id': `${abs(url)}#tool`,
+    name: tool.config.title, url: abs(url), applicationCategory: tool.kind, inLanguage: lang,
+    ...(tool.dataSource ? { creator: { '@type': 'Organization', name: tool.dataSource } } : {}),
+    ...(tool.asOf ? { dateModified: tool.asOf } : {}),
+  };
+}
+function faqPageJsonLd(tool, url) {
+  if (!tool.faq?.length) return null;
+  return {
+    '@context': 'https://schema.org', '@type': 'FAQPage', '@id': `${abs(url)}#faq`,
+    mainEntity: tool.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  };
+}
+
+function toolPage(lang) {
+  const strings = stringsFor(lang), t = makeT(strings);
+  const tool = toolFor(lang);
+  const { config, kind, methodologyHtml, dataSource, asOf, faq, description } = tool;
+  const makeUrl = toolUrl;
+  const ld = toolJsonLd(tool, toolUrl(lang), lang);
+  const faqLd = faqPageJsonLd(tool, toolUrl(lang));
+  const jsonld = JSON.stringify(faqLd ? [ld, faqLd] : [ld]);
+  const embed = embedSnippet({
+    origin: site.domain, toolPageUrl: abs(toolUrl(lang)), embedPageUrl: abs(toolEmbedUrl(lang)),
+    title: config.title, siteName: site.name,
+  });
+  const html = `${head({ lang, t, title: `${config.title} — Egyphoria`, description, url: toolUrl(lang), makeUrl, jsonld })}
+<body>
+${header(lang, t, makeUrl)}
+<main id="main" class="section article">
+  <h1>${esc(config.title)}</h1>
+  <div id="seo-tool-trip-cost" class="seo-tool-placeholder" data-kind="${esc(kind)}" data-config="${esc(JSON.stringify(config))}"></div>
+  ${methodologyHtml ? `<section><h2>${esc(t('tools.methodology'))}</h2>${methodologyHtml}</section>` : ''}
+  ${dataSource ? `<p>${esc(t('tools.dataSource'))} ${esc(dataSource)}${asOf ? ` (${esc(t('tools.asOf'))} ${esc(asOf)})` : ''}</p>` : ''}
+  ${faq?.length ? `<section><h2>${esc(t('tools.faq'))}</h2>${faq.map(f => `<div><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></div>`).join('')}</section>` : ''}
+  <section>
+    <h2>${esc(t('tools.embedTitle'))}</h2>
+    <p>${esc(t('tools.embedIntro'))}</p>
+    <textarea readonly rows="6">${escText(embed)}</textarea>
+  </section>
+</main>
+${footer(lang, t)}
+${dataScript({ lang, t: strings })}
+${scripts()}
+<script src="/seo-tools.js" defer></script>
+</body></html>`;
+  write(join(prefix(lang), 'tools', 'trip-cost', 'index.html'), html);
+}
+
+// iframe-able view: the calculator + a link back to the full page, nothing else (no header,
+// footer, or app.js chrome). noindex + canonical to the tool page, mirroring
+// app/tools/[slug]/embed/page.tsx. Relies on the site sending no X-Frame-Options /
+// frame-ancestors (vercel.json has no `headers` block, so nothing restricts framing).
+function toolEmbedPage(lang) {
+  const strings = stringsFor(lang), t = makeT(strings);
+  const tool = toolFor(lang);
+  const { config, kind } = tool;
+  const html = `${head({ lang, t, title: config.title, description: tool.description, url: toolUrl(lang), robots: 'noindex, follow' })}
+<body>
+  <div id="seo-tool-trip-cost" class="seo-tool-placeholder" data-kind="${esc(kind)}" data-config="${esc(JSON.stringify(config))}"></div>
+  <p><a href="${toolUrl(lang)}" target="_top">${esc(t('tools.embedBack', { site: site.name }))}</a></p>
+  <script src="/seo-tools.js" defer></script>
+  <script>new ResizeObserver(function(){parent.postMessage({seoToolHeight:document.documentElement.scrollHeight},'*')}).observe(document.body)</script>
+</body></html>`;
+  write(join(prefix(lang), 'tools', 'trip-cost', 'embed', 'index.html'), html);
+}
+
 // ---- sitemap + robots ----------------------------------------------------
 // Content that backs each entry has no per-record date of its own, so its
 // lastmod is that content file's own mtime (truthful, not invented).
@@ -347,6 +441,7 @@ const PHOTOGRAPHY_LASTMOD = fileLastmod(join(SRC, 'content', 'photography.html')
 const JOURNAL_INDEX_LASTMOD = ALL_POSTS.length
   ? ALL_POSTS.reduce((max, p) => (p.lastmod > max ? p.lastmod : max), ALL_POSTS[0].lastmod)
   : fileLastmod(join(SRC, 'content', 'blog'));
+const TRIP_COST_LASTMOD = fileLastmod(TRIP_COST_FILE);
 
 function sitemap() {
   const entries = [];
@@ -356,6 +451,7 @@ function sitemap() {
   add(journalUrl, '0.6', 'weekly', JOURNAL_INDEX_LASTMOD);
   for (const p of ALL_POSTS.filter(p => (p.lang || 'en') === 'en')) add((l) => postUrl(l, p.slug), '0.6', 'monthly', p.lastmod);
   add(photoUrl, '0.2', 'yearly', PHOTOGRAPHY_LASTMOD);
+  add(toolUrl, '0.5', 'monthly', TRIP_COST_LASTMOD);
   const urls = entries.map(({ makeUrl, priority, changefreq, lastmod }) => languages.map(l => `  <url>
     <loc>${abs(makeUrl(l.code))}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -408,7 +504,10 @@ function copyStatics() {
   copyDir(join(DIST_ASSETS_SRC), join(DIST, 'assets'));          // keep existing images/og/favicons
   copyFileSync(join(SRC, 'styles.css'), join(DIST, 'styles.css'));
   mkdirSync(join(DIST, 'js'), { recursive: true });
-  for (const f of readdirSync(join(SRC, 'client'))) copyFileSync(join(SRC, 'client', f), join(DIST, 'js', f));
+  // seo-tools.js is served at site root (/seo-tools.js), same as the embed kit's own convention —
+  // not through the /js/ loop below, so it gets its own copy line (like styles.css/motion.js do).
+  for (const f of readdirSync(join(SRC, 'client')).filter(f => f !== 'seo-tools.js')) copyFileSync(join(SRC, 'client', f), join(DIST, 'js', f));
+  copyFileSync(join(SRC, 'client', 'seo-tools.js'), join(DIST, 'seo-tools.js'));
   copyFileSync(join(SRC, 'motion.js'), join(DIST, 'js', 'motion.js'));
 }
 const DIST_ASSETS_SRC = join(DIST, 'assets'); // images already live here; preserved across rebuilds
@@ -416,7 +515,7 @@ const DIST_ASSETS_SRC = join(DIST, 'assets'); // images already live here; prese
 // ---- run -----------------------------------------------------------------
 // Preserve dist/assets; clear generated HTML/js to avoid stale files.
 for (const f of ['index.html', 'photography.html', 'sitemap.xml', 'robots.txt', 'data.mjs', 'app.js', 'motion.js']) { const p = join(DIST, f); if (existsSync(p)) rmSync(p); }
-for (const d of ['js', 'trips', 'journal', 'photography', 'booking', ...languages.filter(l => l.code !== defaultLang).map(l => l.code)]) { const p = join(DIST, d); if (existsSync(p)) rmSync(p, { recursive: true, force: true }); }
+for (const d of ['js', 'trips', 'journal', 'photography', 'booking', 'tools', ...languages.filter(l => l.code !== defaultLang).map(l => l.code)]) { const p = join(DIST, d); if (existsSync(p)) rmSync(p, { recursive: true, force: true }); }
 
 copyStatics();
 for (const { code } of languages) {
@@ -426,6 +525,8 @@ for (const { code } of languages) {
   for (const p of postsFor(code)) journalPost(code, p);
   photographyPage(code);
   bookingPage(code);
+  toolPage(code);
+  toolEmbedPage(code);
 }
 sitemap();
 console.log(`Built ${languages.length} languages × ${trips.length} trips + journal + home. → dist/`);

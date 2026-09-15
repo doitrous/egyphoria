@@ -21,4 +21,14 @@ const home = read('index.html');
 assert.ok(home.includes('<h1'), 'homepage is missing an <h1');
 assert.ok(home.includes('rel="canonical"'), 'homepage is missing rel="canonical"');
 
-console.log(`smoke test passed: ${locs.length} sitemap URLs, all absolute+https, lastmod present; robots.txt has Sitemap:; homepage has h1+canonical.`);
+const toolPage = read('tools/trip-cost/index.html');
+assert.ok(toolPage.includes('seo-tool-placeholder'), 'trip-cost tool page is missing seo-tool-placeholder');
+assert.ok(toolPage.includes('rel="nofollow"'), 'trip-cost tool page embed snippet is missing rel="nofollow"');
+
+const toolEmbedPage = read('tools/trip-cost/embed/index.html');
+assert.ok(toolEmbedPage.includes('noindex'), 'trip-cost embed page is missing noindex');
+
+assert.ok(sitemap.includes('/tools/trip-cost/</loc>'), 'sitemap is missing the trip-cost tool page');
+assert.ok(!sitemap.includes('/tools/trip-cost/embed/'), 'sitemap must not list the trip-cost embed page');
+
+console.log(`smoke test passed: ${locs.length} sitemap URLs, all absolute+https, lastmod present; robots.txt has Sitemap:; homepage has h1+canonical; trip-cost tool + embed pages present, sitemap excludes the embed page.`);
