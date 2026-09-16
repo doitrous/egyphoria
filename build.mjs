@@ -27,6 +27,26 @@ const TRIP_COST_FILE = join(SRC, 'content', 'tools', 'trip-cost.json');
 const TRIP_COST_CONTENT = json(TRIP_COST_FILE);
 const toolFor = (lang) => TRIP_COST_CONTENT[lang] || TRIP_COST_CONTENT[defaultLang];
 
+// ---- help center ------------------------------------------------------------
+// Same shape convention as trip-cost.json: one object keyed by language, only
+// `en` populated for now, other languages fall back to `en` (same as tools/journal).
+const HELP_FILE = join(SRC, 'content', 'help.json');
+const HELP_CONTENT = json(HELP_FILE);
+const helpEntriesFor = (lang) => HELP_CONTENT[lang] || HELP_CONTENT[defaultLang] || [];
+const stripMd = (md) => md.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[*_#>]/g, '').replace(/\s+/g, ' ').trim();
+function resolveMoneyPageUrl(lang, moneyPage) {
+  if (!moneyPage) return null;
+  if (moneyPage.kind === 'trip') return tripUrl(lang, moneyPage.id);
+  if (moneyPage.kind === 'tool') return toolUrl(lang);
+  if (moneyPage.kind === 'home') return `${homeUrl(lang)}${moneyPage.anchor ? '#' + moneyPage.anchor : ''}`;
+  return moneyPage.url || null;
+}
+
+// ---- editorial guidelines ---------------------------------------------------
+const EDITORIAL_FILE = join(SRC, 'content', 'editorial.json');
+const EDITORIAL_CONTENT = json(EDITORIAL_FILE);
+const editorialMdFor = (lang) => EDITORIAL_CONTENT[lang] || EDITORIAL_CONTENT[defaultLang] || '';
+
 // ---- i18n ----------------------------------------------------------------
 const enStrings = json(join(SRC, 'i18n', 'en.json'));
 function deepMerge(base, over) {
@@ -63,6 +83,9 @@ const postUrl = (lang, slug) => `${prefix(lang)}/journal/${slug}/`;
 const photoUrl = (lang) => `${prefix(lang)}/photography/`;
 const toolUrl = (lang) => `${prefix(lang)}/tools/trip-cost/`;
 const toolEmbedUrl = (lang) => `${prefix(lang)}/tools/trip-cost/embed/`;
+const helpUrl = (lang) => `${prefix(lang)}/help/`;
+const helpEntryUrl = (lang, slug) => `${prefix(lang)}/help/${slug}/`;
+const editorialUrl = (lang) => `${prefix(lang)}/editorial-guidelines/`;
 const abs = (path) => site.domain + path;
 
 // hreflang alternates for a given "page key" function
@@ -125,9 +148,42 @@ function header(lang, t, makeUrl) {
 </header>`;
 }
 
-function footer(lang, t) {
+// Real generated pages only, reflecting the site's actual home → tour hierarchy:
+// Egyphoria has no separate tour-category pages (trips sit directly under home),
+// so the "category" link is the homepage's journeys section, plus a spread of
+// real /trips/<id>/ tour pages — 7 links total, within the 6-8 target.
+const POPULAR_SEARCH_TRIP_IDS = ['egypt-unfolded', 'nile', 'desert', 'red-sea', 'giza-day', 'cairo-day'];
+function popularSearchesHtml(lang, t, trps) {
+  const items = [`<a href="${homeUrl(lang)}#journeys">${esc(t('footer.explore'))}</a>`].concat(
+    POPULAR_SEARCH_TRIP_IDS.map((id) => {
+      const tr = trps.find((x) => x.id === id);
+      return tr ? `<a href="${tripUrl(lang, id)}">${esc(tr.name)}</a>` : '';
+    }).filter(Boolean)
+  );
+  return `<nav aria-label="${esc(t('footer.popularSearchesLabel'))}"><p class="eyebrow burgundy">${esc(t('footer.popularSearchesLabel'))}</p>${items.join('')}</nav>`;
+}
+
+// Server-rendered share links (never a tracking URL, per seo-structure/01 §5); the
+// /js/share.js upgrade adds navigator.share() on phones and wires the copy button.
+function shareBlockHtml(t, { url, title }) {
+  const absUrl = abs(url), u = encodeURIComponent(absUrl), tt = encodeURIComponent(title);
+  return `<div class="seo-share" data-share-url="${esc(absUrl)}" data-share-title="${esc(title)}">
+  <span class="eyebrow burgundy">${esc(t('share.label'))}</span>
+  <a href="https://wa.me/?text=${tt}%20${u}" rel="nofollow noopener" target="_blank">WhatsApp</a>
+  <a href="https://twitter.com/intent/tweet?url=${u}&text=${tt}" rel="nofollow noopener" target="_blank">X</a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=${u}" rel="nofollow noopener" target="_blank">Facebook</a>
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=${u}" rel="nofollow noopener" target="_blank">LinkedIn</a>
+  <button type="button" class="seo-share-copy" data-copied="${esc(t('share.copied'))}">${esc(t('share.copyLink'))}</button>
+</div>`;
+}
+
+// `share`, when given `{url, title}`, appends the share block right after the footer
+// (bottom of body) for that one page — threaded through here once instead of being
+// duplicated at every page-generator call site.
+function footer(lang, t, share = null) {
   const h = homeUrl(lang);
-  return `<footer class="footer"><a href="${h}" class="brand" aria-label="${esc(t('nav.home'))}"><span class="logo-window"><img src="/assets/egyphoria-wordmark-hd.png" alt="Egyphoria" loading="lazy"></span></a><p>${esc(t('footer.tagline'))}</p><nav aria-label="Footer navigation"><a href="${h}#journeys">${esc(t('footer.explore'))}</a><a href="${h}#behind-egyphoria">${esc(t('footer.behind'))}</a><a href="${journalUrl(lang)}">${esc(t('footer.journal'))}</a><a href="${toolUrl(lang)}">${esc(t('footer.tools'))}</a><a href="${h}#builder">${esc(t('footer.builder'))}</a></nav><div class="footer-bottom"><span>© <span id="year">${new Date().getFullYear()}</span> Egyphoria. ${esc(t('footer.rights'))}</span><span><a href="${photoUrl(lang)}">${esc(t('footer.photography'))}</a> · ${esc(t('footer.madeWith'))}</span></div></footer>`;
+  const { trps } = contentFor(lang);
+  return `<footer class="footer"><a href="${h}" class="brand" aria-label="${esc(t('nav.home'))}"><span class="logo-window"><img src="/assets/egyphoria-wordmark-hd.png" alt="Egyphoria" loading="lazy"></span></a><p>${esc(t('footer.tagline'))}</p><nav aria-label="Footer navigation"><a href="${h}#journeys">${esc(t('footer.explore'))}</a><a href="${h}#behind-egyphoria">${esc(t('footer.behind'))}</a><a href="${journalUrl(lang)}">${esc(t('footer.journal'))}</a><a href="${toolUrl(lang)}">${esc(t('footer.tools'))}</a><a href="${h}#builder">${esc(t('footer.builder'))}</a></nav><div class="footer-links">${popularSearchesHtml(lang, t, trps)}<nav aria-label="${esc(t('footer.supportLabel'))}"><p class="eyebrow burgundy">${esc(t('footer.supportLabel'))}</p><a href="${helpUrl(lang)}">${esc(t('footer.help'))}</a><a href="${editorialUrl(lang)}">${esc(t('footer.editorial'))}</a></nav></div><div class="footer-bottom"><span>© <span id="year">${new Date().getFullYear()}</span> Egyphoria. ${esc(t('footer.rights'))}</span><span><a href="${photoUrl(lang)}">${esc(t('footer.photography'))}</a> · ${esc(t('footer.madeWith'))}</span></div></footer>${share ? shareBlockHtml(t, share) : ''}`;
 }
 
 // plan dialog (edit → details → done). Shared on home + trip pages.
@@ -157,7 +213,7 @@ function planDialog(t) {
 <div class="toast" role="status" id="toast"></div>`;
 }
 
-const scripts = (extra = []) => ['/js/app.js', ...extra].map(s => `<script type="module" src="${s}"></script>`).join('') + '<script defer src="/js/motion.js"></script>';
+const scripts = (extra = []) => ['/js/app.js', '/js/share.js', ...extra].map(s => `<script type="module" src="${s}"></script>`).join('') + '<script defer src="/js/motion.js"></script>';
 
 // ---- injected client payload --------------------------------------------
 function clientTrips(lang, trps, t) {
@@ -204,7 +260,7 @@ ${header(lang, t, homeUrl)}
   <div class="builder-panel"><form id="builder-form"><div class="form-heading"><span class="step-number">01</span><h3>${esc(t('builder.step1'))}</h3></div><fieldset><legend>${esc(t('builder.whereLegend'))}</legend><div class="destination-options" id="destination-options"></div></fieldset><div class="form-row"><label>${esc(t('builder.daysLabel'))}<select id="duration" name="duration"><option value="3">${t('builder.daysOption', { n: 3 })}</option><option value="5">${t('builder.daysOption', { n: 5 })}</option><option value="7" selected>${t('builder.daysOption', { n: 7 })}</option><option value="10">${t('builder.daysOption', { n: 10 })}</option><option value="14">${t('builder.daysOption', { n: 14 })}</option></select></label><label>${esc(t('builder.paceLabel'))}<select id="pace" name="pace"><option value="balanced">${esc(t('builder.paceBalanced'))}</option><option value="slow">${esc(t('builder.paceSlow'))}</option><option value="full">${esc(t('builder.paceFull'))}</option></select></label></div><fieldset><legend>${esc(t('builder.interestsLegend'))}</legend><div class="interest-options"><label><input type="checkbox" value="history" checked><span>${esc(t('builder.interestHistory'))}</span></label><label><input type="checkbox" value="culture" checked><span>${esc(t('builder.interestCulture'))}</span></label><label><input type="checkbox" value="nature"><span>${esc(t('builder.interestNature'))}</span></label><label><input type="checkbox" value="relax"><span>${esc(t('builder.interestRelax'))}</span></label></div></fieldset><p id="builder-error" class="form-error" role="alert"></p><button class="button" type="submit">${esc(t('builder.submit'))} <span aria-hidden="true">${ICON}</span></button><p class="form-note">${esc(t('builder.formNote'))}</p></form><div class="builder-preview"><div class="preview-top"><span class="eyebrow">${esc(t('builder.previewLabel'))}</span><span class="sun-symbol" aria-hidden="true">☀</span></div><h3>${t('builder.previewTitle')}</h3><div class="sample-route"><div><span>01—03</span><p>${esc(t('builder.sample1'))}<small>${esc(t('builder.sample1Note'))}</small></p></div><div><span>04—05</span><p>${esc(t('builder.sample2'))}<small>${esc(t('builder.sample2Note'))}</small></p></div><div><span>06—07</span><p>${esc(t('builder.sample3'))}<small>${esc(t('builder.sample3Note'))}</small></p></div></div><p class="preview-note">${esc(t('builder.previewNote'))}</p></div></div></section>
   <section class="closing section" data-reveal><p class="eyebrow burgundy">${esc(t('closing.eyebrow'))}</p><h2>${t('closing.title')}</h2><a href="#builder" class="button">${esc(t('closing.cta'))} <span aria-hidden="true">${ICON}</span></a></section>
 </main>
-${footer(lang, t)}
+${footer(lang, t, { url: homeUrl(lang), title: t('meta.title') })}
 ${planDialog(t)}
 ${dataScript(payload(lang, strings, dest, trps))}
 ${scripts(['/js/itinerary.js'])}
@@ -250,7 +306,7 @@ ${header(lang, t, makeUrl)}
   </section>
   ${related.length ? `<section class="section related"><h2>${esc(t('trip.related'))}</h2><div class="trip-grid">${related.map(r => { const rp = prices[r.id]; const rl = rp ? `${rp.from ? t('journeys.from') + ' ' : ''}${site.currencySymbol}${rp.amount.toLocaleString('en-US')}` : ''; return `<article class="trip-card"><a class="trip-image" href="${tripUrl(lang, r.id)}"><img src="/assets/${r.image}.jpg" alt="${esc(r.name)}" loading="lazy">${rl ? `<span class="trip-price">${esc(rl)}</span>` : ''}<span class="trip-badge">${esc(r.tag)}</span></a><p class="trip-meta">${esc(r.location)}</p><h3><a href="${tripUrl(lang, r.id)}">${esc(r.name)}</a></h3><p class="trip-description">${esc(r.description)}</p></article>`; }).join('')}</div></section>` : ''}
 </main>
-${footer(lang, t)}
+${footer(lang, t, { url: tripUrl(lang, trip.id), title: localTrip.name })}
 ${planDialog(t)}
 ${dataScript(payload(lang, strings, dest, trps, localTrip))}
 ${scripts(['/js/itinerary.js', '/js/trip.js'])}
@@ -287,7 +343,7 @@ ${header(lang, t, journalUrl)}
   <div class="section-heading"><div><p class="eyebrow burgundy">${esc(t('journal.eyebrow'))}</p><h1>${esc(t('journal.title'))}</h1></div><p>${esc(t('journal.intro'))}</p></div>
   <div class="post-grid">${cards || '<p>Coming soon.</p>'}</div>
 </main>
-${footer(lang, t)}
+${footer(lang, t, { url: journalUrl(lang), title: t('journal.title') })}
 ${dataScript({ lang, t: strings })}
 ${scripts()}
 </body></html>`;
@@ -310,7 +366,7 @@ ${header(lang, t, makeUrl)}
   <div class="article-body">${markdown(post.body, { homeUrl: homeUrl(lang), tripUrl: (id) => tripUrl(lang, id) })}</div>
   <div class="article-cta"><p>${esc(t('journal.cta'))}</p><a class="button" href="${homeUrl(lang)}#builder">${esc(t('journal.ctaButton'))} <span aria-hidden="true">${ICON}</span></a></div>
 </main>
-${footer(lang, t)}
+${footer(lang, t, { url: postUrl(lang, post.slug), title: post.title })}
 ${dataScript({ lang, t: strings })}
 ${scripts()}
 </body></html>`;
@@ -407,7 +463,7 @@ ${header(lang, t, makeUrl)}
     <textarea readonly rows="6">${escText(embed)}</textarea>
   </section>
 </main>
-${footer(lang, t)}
+${footer(lang, t, { url: toolUrl(lang), title: config.title })}
 ${dataScript({ lang, t: strings })}
 ${scripts()}
 <script src="/seo-tools.js" defer></script>
@@ -433,6 +489,89 @@ function toolEmbedPage(lang) {
   write(join(prefix(lang), 'tools', 'trip-cost', 'embed', 'index.html'), html);
 }
 
+// ---- help center ------------------------------------------------------------
+// /help index + /help/<slug> per entry, mirroring the tools pages above: one
+// static index.html per path, hub-snapshot-shaped local JSON as the data source.
+// Empty `entries` still writes a normal 200 page with the baked-in empty state
+// (doc 06's rollout rule / the ticket's "empty hub data" requirement) — it is
+// never skipped.
+function helpIndexPage(lang) {
+  const strings = stringsFor(lang), t = makeT(strings);
+  const entries = helpEntriesFor(lang);
+  const list = entries.length
+    ? `<ul class="help-list">${entries.map(e => `<li><a href="${helpEntryUrl(lang, e.slug)}">${esc(e.question)}</a></li>`).join('')}</ul>`
+    : `<p>${esc(t('help.empty'))}</p>`;
+  const jsonld = entries.length ? JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: entries.slice(0, 10).map(e => ({ '@type': 'Question', name: e.question, acceptedAnswer: { '@type': 'Answer', text: stripMd(e.answerMd) } })),
+  }) : '';
+  const html = `${head({ lang, t, title: t('help.metaTitle'), description: t('help.intro'), url: helpUrl(lang), makeUrl: helpUrl, jsonld })}
+<body>
+${header(lang, t, helpUrl)}
+<main id="main" class="section article">
+  <h1>${esc(t('help.title'))}</h1>
+  <p>${esc(t('help.intro'))}</p>
+  ${entries.length ? `<input type="search" id="help-search" placeholder="${esc(t('help.searchPlaceholder'))}" aria-label="${esc(t('help.searchPlaceholder'))}">` : ''}
+  ${list}
+</main>
+${footer(lang, t, { url: helpUrl(lang), title: t('help.title') })}
+${dataScript({ lang, t: strings })}
+${scripts()}
+${entries.length ? `<script>(function(){var i=document.getElementById('help-search');var items=document.querySelectorAll('.help-list li');i.addEventListener('input',function(){var q=i.value.toLowerCase();items.forEach(function(li){li.hidden=!li.textContent.toLowerCase().includes(q)})})})();</script>` : ''}
+</body></html>`;
+  write(join(prefix(lang), 'help', 'index.html'), html);
+}
+
+function helpEntryPage(lang, entry) {
+  const strings = stringsFor(lang), t = makeT(strings);
+  const makeUrl = (l) => helpEntryUrl(l, entry.slug);
+  const answerHtml = markdown(entry.answerMd, { homeUrl: homeUrl(lang), tripUrl: (id) => tripUrl(lang, id) });
+  const moneyUrl = resolveMoneyPageUrl(lang, entry.moneyPage);
+  const cta = moneyUrl ? `<p><a class="button small" href="${moneyUrl}">${esc(t('help.cta'))} <span aria-hidden="true">${ICON}</span></a></p>` : '';
+  const jsonld = JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'Article', headline: entry.question,
+    dateModified: entry.updatedAt, inLanguage: lang, url: abs(helpEntryUrl(lang, entry.slug)),
+    author: { '@type': 'Organization', name: 'Egyphoria' },
+    publisher: { '@type': 'Organization', name: 'Egyphoria', logo: { '@type': 'ImageObject', url: abs('/assets/egyphoria-icon-hd.png') } },
+    mainEntityOfPage: abs(helpEntryUrl(lang, entry.slug)),
+  });
+  const html = `${head({ lang, t, title: `${entry.question} — Egyphoria`, description: entry.question, url: helpEntryUrl(lang, entry.slug), makeUrl, jsonld, type: 'article' })}
+<body>
+${header(lang, t, makeUrl)}
+<main id="main" class="article">
+  <a class="trip-back dark" href="${helpUrl(lang)}">← ${esc(t('help.backToHelp'))}</a>
+  <h1>${esc(entry.question)}</h1>
+  <div class="article-body">${answerHtml}</div>
+  ${cta}
+</main>
+${footer(lang, t, { url: helpEntryUrl(lang, entry.slug), title: entry.question })}
+${dataScript({ lang, t: strings })}
+${scripts()}
+</body></html>`;
+  write(join(prefix(lang), 'help', entry.slug, 'index.html'), html);
+}
+
+// ---- editorial guidelines ---------------------------------------------------
+// Empty/unset guidelines still write a normal 200 page with the baked-in
+// "not published yet" placeholder, same empty-state convention as /help.
+function editorialGuidelinesPage(lang) {
+  const strings = stringsFor(lang), t = makeT(strings);
+  const md = editorialMdFor(lang);
+  const body = md ? markdown(md, { homeUrl: homeUrl(lang), tripUrl: (id) => tripUrl(lang, id) }) : `<p>${esc(t('editorial.notPublished'))}</p>`;
+  const html = `${head({ lang, t, title: t('editorial.metaTitle'), description: t('editorial.title'), url: editorialUrl(lang), makeUrl: editorialUrl })}
+<body>
+${header(lang, t, editorialUrl)}
+<main id="main" class="section article">
+  <h1>${esc(t('editorial.title'))}</h1>
+  ${body}
+</main>
+${footer(lang, t, { url: editorialUrl(lang), title: t('editorial.title') })}
+${dataScript({ lang, t: strings })}
+${scripts()}
+</body></html>`;
+  write(join(prefix(lang), 'editorial-guidelines', 'index.html'), html);
+}
+
 // ---- sitemap + robots ----------------------------------------------------
 // Content that backs each entry has no per-record date of its own, so its
 // lastmod is that content file's own mtime (truthful, not invented).
@@ -442,6 +581,8 @@ const JOURNAL_INDEX_LASTMOD = ALL_POSTS.length
   ? ALL_POSTS.reduce((max, p) => (p.lastmod > max ? p.lastmod : max), ALL_POSTS[0].lastmod)
   : fileLastmod(join(SRC, 'content', 'blog'));
 const TRIP_COST_LASTMOD = fileLastmod(TRIP_COST_FILE);
+const HELP_LASTMOD = fileLastmod(HELP_FILE);
+const EDITORIAL_LASTMOD = fileLastmod(EDITORIAL_FILE);
 
 function sitemap() {
   const entries = [];
@@ -452,6 +593,9 @@ function sitemap() {
   for (const p of ALL_POSTS.filter(p => (p.lang || 'en') === 'en')) add((l) => postUrl(l, p.slug), '0.6', 'monthly', p.lastmod);
   add(photoUrl, '0.2', 'yearly', PHOTOGRAPHY_LASTMOD);
   add(toolUrl, '0.5', 'monthly', TRIP_COST_LASTMOD);
+  add(helpUrl, '0.5', 'monthly', HELP_LASTMOD);
+  for (const e of helpEntriesFor(defaultLang)) add((l) => helpEntryUrl(l, e.slug), '0.5', 'monthly', e.updatedAt || HELP_LASTMOD);
+  add(editorialUrl, '0.3', 'yearly', EDITORIAL_LASTMOD);
   const urls = entries.map(({ makeUrl, priority, changefreq, lastmod }) => languages.map(l => `  <url>
     <loc>${abs(makeUrl(l.code))}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -515,7 +659,7 @@ const DIST_ASSETS_SRC = join(DIST, 'assets'); // images already live here; prese
 // ---- run -----------------------------------------------------------------
 // Preserve dist/assets; clear generated HTML/js to avoid stale files.
 for (const f of ['index.html', 'photography.html', 'sitemap.xml', 'robots.txt', 'data.mjs', 'app.js', 'motion.js']) { const p = join(DIST, f); if (existsSync(p)) rmSync(p); }
-for (const d of ['js', 'trips', 'journal', 'photography', 'booking', 'tools', ...languages.filter(l => l.code !== defaultLang).map(l => l.code)]) { const p = join(DIST, d); if (existsSync(p)) rmSync(p, { recursive: true, force: true }); }
+for (const d of ['js', 'trips', 'journal', 'photography', 'booking', 'tools', 'help', 'editorial-guidelines', ...languages.filter(l => l.code !== defaultLang).map(l => l.code)]) { const p = join(DIST, d); if (existsSync(p)) rmSync(p, { recursive: true, force: true }); }
 
 copyStatics();
 for (const { code } of languages) {
@@ -527,6 +671,9 @@ for (const { code } of languages) {
   bookingPage(code);
   toolPage(code);
   toolEmbedPage(code);
+  helpIndexPage(code);
+  for (const e of helpEntriesFor(code)) helpEntryPage(code, e);
+  editorialGuidelinesPage(code);
 }
 sitemap();
 console.log(`Built ${languages.length} languages × ${trips.length} trips + journal + home. → dist/`);
