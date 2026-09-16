@@ -121,7 +121,11 @@
     "rights": "All rights reserved.",
     "photography": "Photography",
     "madeWith": "Made with a love for Egypt.",
-    "tools": "Trip cost calculator"
+    "tools": "Trip cost calculator",
+    "popularSearchesLabel": "Popular searches",
+    "supportLabel": "Support",
+    "help": "Help center",
+    "editorial": "Editorial guidelines"
   },
   "trip": {
     "back": "Back to all journeys",
@@ -206,5 +210,24 @@
     "embedTitle": "Embed this calculator",
     "embedIntro": "Paste this on your own site. It works anywhere HTML does — please keep the credit link.",
     "embedBack": "Full calculator, methodology and FAQ at {site}"
+  },
+  "help": {
+    "metaTitle": "Egypt Trip Help Center — Egyphoria",
+    "title": "Help center",
+    "intro": "Answers to the questions travelers ask us most before booking an Egypt trip.",
+    "searchPlaceholder": "Search a question…",
+    "empty": "No help entries yet.",
+    "backToHelp": "Back to the Help Center",
+    "cta": "Learn more"
+  },
+  "editorial": {
+    "metaTitle": "Editorial Guidelines — Egyphoria",
+    "title": "Editorial guidelines",
+    "notPublished": "Our editorial guidelines are being finalized and will be published here shortly."
+  },
+  "share": {
+    "label": "Share this page",
+    "copyLink": "Copy link",
+    "copied": "Copied!"
   }
 }
