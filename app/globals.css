@@ -13,11 +13,12 @@
   --ink:#15181d;--paper:#ffffff;--muted:#55606c;--line:#cfd6e3;
   --wine:var(--blue);--wine-dark:var(--blue-dark);
   --yellow-dark:#d1a70d;
-  /* Fix round 1, blocker #4: var(--font-board-greek)/var(--font-reading-greek) (Roboto
-     Condensed/Roboto, app/layout.tsx) sit after the Archivo variables — font-stack fallback is
-     per glyph, so Latin text still renders in Archivo and only Greek falls through to these. */
-  --serif:var(--font-board),var(--font-board-greek),'Archivo Narrow',sans-serif;
-  --sans:var(--font-reading),var(--font-reading-greek),'Archivo',sans-serif;
+  /* Greek: Archivo has no greek subset, Roboto Condensed/Roboto (app/layout.tsx) carry it. The
+     real family names go first because next/font's generated "… Fallback" face (inside the
+     variables) declares unicode-range U+0-10FFFF and would swallow Greek before the per-glyph
+     walk reaches Roboto. The variables stay last so the metric fallbacks still apply. */
+  --serif:'Archivo Narrow','Roboto Condensed',var(--font-board),var(--font-board-greek),sans-serif;
+  --sans:'Archivo','Roboto',var(--font-reading),var(--font-reading-greek),sans-serif;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:120px}
@@ -70,7 +71,7 @@ header{background:var(--blue);color:#fff}
      touch target on a 375px panel. */
   #main-nav>ul a{display:block;padding:12px 0}
   .lang-cells{flex-wrap:wrap}
-  .lang-cells a{width:44px;height:44px}
+  #main-nav .lang-cells a{display:flex;padding:0;width:44px;height:44px}
 }
 
 /* -------------------------------------------------------------------------
@@ -135,7 +136,7 @@ header{background:var(--blue);color:#fff}
 /* Sections between boards */
 .home-section{padding:72px 6% 56px;max-width:1200px;margin:auto}
 .home-section h2{font-size:clamp(2rem,3.2vw,2.8rem);margin-bottom:28px;max-width:24ch}
-.home-section>.section-lead{color:var(--muted);font-size:1.05rem;line-height:1.7;max-width:38rem;margin-bottom:28px}
+.home-section>.section-lead{color:var(--muted);font-size:1.05rem;line-height:1.7;max-width:34rem;margin-bottom:28px}
 
 /* Week strip */
 .week-strip{display:flex;flex-direction:column;gap:28px}
@@ -148,7 +149,7 @@ header{background:var(--blue);color:#fff}
 .week-connections li{font-size:.95rem;color:var(--muted);padding:8px 0;border-bottom:1px dashed var(--line)}
 .week-note{font-size:.9rem;color:var(--muted);margin-top:4px}
 .week-note a{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
-.home-section p.week-para{max-width:38rem;color:var(--ink);line-height:1.75;margin-top:16px}
+.home-section p.week-para{max-width:34rem;color:var(--ink);line-height:1.75;margin-top:16px}
 
 /* Destinations table */
 .destinations-board{font-family:var(--sans)}
@@ -180,7 +181,7 @@ header{background:var(--blue);color:#fff}
 .form-note{font-size:12px;color:var(--muted);margin-top:12px}
 
 /* Founders */
-.founders-section p{max-width:38rem;color:var(--ink);line-height:1.75;margin-top:14px}
+.founders-section p{max-width:34rem;color:var(--ink);line-height:1.75;margin-top:14px}
 .founders-names{font-family:var(--serif);font-weight:700;font-size:1.3rem;color:var(--blue);margin-top:18px}
 .founders-photo{margin-top:20px;width:100%;max-width:420px;height:auto}
 

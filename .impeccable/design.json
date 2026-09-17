@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T12:37:31Z",
+  "title": "Design System: Egyphoria — The Continental Timetable",
+  "extensions": {
+    "colorMeta": {
+      "signal-blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "#0b2f6b",
+        "tonalRamp": ["oklch(15% 0.09 262)", "oklch(22% 0.10 262)", "oklch(30% 0.11 262)", "oklch(38% 0.12 262)", "oklch(48% 0.12 262)", "oklch(60% 0.11 262)", "oklch(78% 0.08 262)", "oklch(95% 0.02 262)"]
+      },
+      "signal-blue-dark": {
+        "role": "primary",
+        "displayName": "Signal Blue, Dark (hover)",
+        "canonical": "#082352"
+      },
+      "signal-blue-tint": {
+        "role": "primary",
+        "displayName": "Signal Blue Tint (footer lead text)",
+        "canonical": "#b9c7e6"
+      },
+      "sun-yellow": {
+        "role": "secondary",
+        "displayName": "Sun Yellow",
+        "canonical": "#f2c10f",
+        "tonalRamp": ["oklch(15% 0.05 95)", "oklch(28% 0.09 95)", "oklch(42% 0.12 95)", "oklch(56% 0.14 95)", "oklch(70% 0.16 95)", "oklch(82% 0.16 95)", "oklch(90% 0.12 95)", "oklch(96% 0.05 95)"]
+      },
+      "sun-yellow-dark": {
+        "role": "secondary",
+        "displayName": "Sun Yellow, Dark (hover)",
+        "canonical": "#d1a70d"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#15181d",
+        "tonalRamp": ["oklch(12% 0.01 255)", "oklch(20% 0.01 255)", "oklch(30% 0.01 255)", "oklch(40% 0.01 255)", "oklch(52% 0.01 255)", "oklch(65% 0.01 255)", "oklch(80% 0.01 255)", "oklch(95% 0.005 255)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#ffffff"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#55606c"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#cfd6e3"
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The H1 only, one per page." },
+      "headline": { "displayName": "Headline", "purpose": "Every H2 section heading." },
+      "title": { "displayName": "Title", "purpose": "Board place names, week-strip stations, founders' names." },
+      "body": { "displayName": "Body", "purpose": "Standfirst, section leads, paragraph copy." },
+      "label": { "displayName": "Label", "purpose": "Table column headers (departures board, destinations table)." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "board-settle", "value": "translateY(12px)->0, opacity 0->1, 420ms cubic-bezier(.16,1,.3,1), 40ms stagger per row via inline --i", "purpose": "The one authored motion moment: departures-board rows settle top-to-bottom on first paint, like flaps dropping into a split-flap display. Disabled entirely under prefers-reduced-motion: reduce." }
+    ],
+    "breakpoints": [
+      { "name": "nav-collapse", "value": "900px" },
+      { "name": "table-stack", "value": "820px" },
+      { "name": "intro-stack", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The homepage's one reserved-yellow action: \"Build my itinerary\".",
+      "html": "<a href=\"#builder\" class=\"ds-btn-primary\">Build my itinerary</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 28px; background: var(--yellow, #f2c10f); color: var(--ink, #15181d); border: 1px solid var(--yellow, #f2c10f); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; font-size: 15px; transition: transform 0.2s, background 0.2s, border-color 0.2s; } .ds-btn-primary:hover { background: #d1a70d; border-color: #d1a70d; transform: translateY(-2px); } .ds-btn-primary:focus-visible { outline: 3px solid var(--blue, #0b2f6b); outline-offset: 3px; }"
+    },
+    {
+      "name": "Platform Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "The ordinary action color everywhere else on the site — signal blue, not the rationed yellow.",
+      "html": "<button class=\"ds-btn\">View trip</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 16px 24px; background: var(--blue, #0b2f6b); color: #fff; border: 1px solid var(--blue, #0b2f6b); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; font-size: 15px; transition: background 0.2s, transform 0.2s; } .ds-btn:hover { background: #082352; transform: translateY(-2px); } .ds-btn:focus-visible { outline: 3px solid var(--blue, #0b2f6b); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Link",
+      "kind": "custom",
+      "refersTo": "text-link",
+      "description": "Underlined hairline link used in the week strip, share block and footer legalese.",
+      "html": "<a href=\"#\" class=\"ds-text-link\">Read the source article →</a>",
+      "css": ".ds-text-link { display: inline-flex; gap: 10px; align-items: center; color: var(--blue, #0b2f6b); font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--line, #cfd6e3); padding: 6px 0; transition: border-color 0.15s; } .ds-text-link:hover { border-color: var(--blue, #0b2f6b); } .ds-text-link:focus-visible { outline: 3px solid var(--blue, #0b2f6b); outline-offset: 3px; }"
+    },
+    {
+      "name": "Language Cell",
+      "kind": "nav",
+      "refersTo": "lang-cell-current",
+      "description": "One of six two-letter language cells in the header's timetable-style switcher; the current locale's cell is filled sun-yellow.",
+      "html": "<ul class=\"ds-lang-cells\"><li><a href=\"#\" class=\"ds-lang-cell\">NL</a></li><li><a href=\"#\" class=\"ds-lang-cell ds-lang-cell-current\" aria-current=\"true\">EN</a></li></ul>",
+      "css": ".ds-lang-cells { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; } .ds-lang-cell { display: flex; align-items: center; justify-content: center; width: 34px; height: 28px; border: 1px solid rgba(255,255,255,.35); color: #fff; font-family: 'Archivo Narrow', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .02em; } .ds-lang-cell:hover { border-color: #fff; } .ds-lang-cell-current { background: var(--yellow, #f2c10f); color: var(--ink, #15181d); border-color: var(--yellow, #f2c10f); }"
+    },
+    {
+      "name": "Station Toggle Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "The itinerary builder's destination/interest toggle — a checkbox visually hidden and stretched under a square hairline chip.",
+      "html": "<label class=\"ds-chip\"><input type=\"checkbox\" checked /><span>Luxor</span></label>",
+      "css": ".ds-chip { cursor: pointer; position: relative; display: inline-block; } .ds-chip input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; } .ds-chip span { display: block; border: 1px solid var(--line, #cfd6e3); padding: 9px 14px; font-size: 13px; transition: background .15s, color .15s, border-color .15s; } .ds-chip input:checked + span { background: var(--blue, #0b2f6b); color: #fff; border-color: var(--blue, #0b2f6b); } .ds-chip input:focus-visible + span { outline: 3px solid var(--blue, #0b2f6b); outline-offset: 3px; }"
+    },
+    {
+      "name": "Departures Board Row",
+      "kind": "custom",
+      "refersTo": "board-row",
+      "description": "Signature component: one row of the homepage's real <table> departures board — a stretched whole-row link, a two-line place cell, tabular-figure days/price/months, and a hover/focus state that turns the row sun-yellow.",
+      "html": "<table class=\"ds-board\"><thead><tr><th>Place</th><th>Days</th><th>From (pp)</th><th>Best months</th><th></th></tr></thead><tbody><tr class=\"ds-board-row\"><td><a href=\"#\" class=\"ds-board-row-link\"><span class=\"ds-board-row-place\">Cairo · Luxor · Aswan</span><span class=\"ds-board-row-title\">Egypt, unfolded</span></a></td><td>7 days</td><td>from $1,450</td><td>Oct–Apr</td><td class=\"ds-board-arrow\" aria-hidden=\"true\">→</td></tr></tbody></table>",
+      "css": ".ds-board { font-family: 'Archivo Narrow', sans-serif; border-collapse: collapse; width: 100%; border-top: 2px solid var(--blue, #0b2f6b); } .ds-board thead th { text-align: left; padding: 12px 20px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted, #55606c); border-bottom: 1px solid var(--line, #cfd6e3); font-weight: 600; font-family: Archivo, sans-serif; } .ds-board tbody tr { position: relative; border-bottom: 1px solid var(--line, #cfd6e3); } .ds-board tbody td { padding: 18px 20px; font-size: 1.05rem; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; } .ds-board-row-link { color: inherit; } .ds-board-row-link::after { content: ''; position: absolute; inset: 0; } .ds-board-row-place { display: block; font-weight: 700; font-size: 1.15rem; } .ds-board-row-title { display: block; font-family: Archivo, sans-serif; font-weight: 500; font-size: .92rem; color: var(--muted, #55606c); margin-top: 2px; } .ds-board-arrow { color: var(--blue, #0b2f6b); text-align: right; font-weight: 700; } .ds-board tbody tr:hover, .ds-board tbody tr:focus-within { background: var(--yellow, #f2c10f); } .ds-board tbody tr:hover td, .ds-board tbody tr:focus-within td { color: var(--ink, #15181d); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Continental Timetable",
+    "overview": "Egyphoria's homepage sells a private Egypt trip the way Europeans already trust travel: as an honest board of places, days, prices and connections, in the visual language of Cook's Continental Timetable and the classic European departures board. It refuses the category default — no full-bleed pyramid photo with a search box floating over it. Instead, signal blue fields own whole regions of the page (the header band, the board's top rule, the builder strip, the footer) the way a station's livery owns its concourse, white carries the boards themselves, and one sun-yellow is spent on exactly the things a traveller needs to notice fast: the primary action and the row they're looking at.\n\nThe system is dense with real information and light on decoration. Every number on the page — a day count, a price, a month range — is set in tabular figures so it lines up like a printed schedule. Real <table> markup carries the departures board and the destinations list because this is tabular data, not a design metaphor to fake with divs. The one authored flourish is restrained: board rows settle into place top-to-bottom on first paint, like flaps dropping into a split-flap display, then the page goes still. Station photography appears only in the gaps between boards, full-bleed, captioned, never behind text.",
+    "keyCharacteristics": [
+      "Signal blue owns regions; it is not a decorative accent, it is a background material.",
+      "Sun-yellow is rationed to the primary action, the active board row, and the current-language cell — nowhere else.",
+      "Real <table>s for real tabular content; no div-grid impersonating a table.",
+      "Every figure (price, days, months) in tabular numerals.",
+      "Zero border-radius anywhere in the system; hairline rules do the separating work a shadow or a rounded card would otherwise do.",
+      "One authored motion moment (the board settle), switched off completely under prefers-reduced-motion: reduce."
+    ],
+    "rules": [
+      { "name": "The One Yellow Rule", "body": "Sun-yellow appears in exactly three places on the homepage — the primary action button, the hovered/focused departures-board row, and the current-language cell — and nowhere else. It never decorates a heading, a badge, or a photo caption.", "section": "colors" },
+      { "name": "The Tabular Numbers Rule", "body": "Every price, day count and month range in the departures board and destinations table sets font-variant-numeric: tabular-nums — figures line up column-to-column the way a printed timetable's do.", "section": "typography" },
+      { "name": "The Greek Understudy Rule", "body": "Archivo Narrow and Archivo ship no Greek subset on Google Fonts. Roboto Condensed and Roboto, loaded subsets: ['greek'] only, sit after the Archivo variables in the --serif/--sans stacks. Font-stack fallback resolves per glyph, not per element, so Latin text keeps rendering in Archivo and only the Greek characters Archivo can't draw fall through to the Roboto pair.", "section": "typography" },
+      { "name": "The Flat Board Rule", "body": "A named-color surface (blue band, white board, yellow row) is flat at rest and stays flat on hover — state changes color, never elevation.", "section": "elevation" },
+      { "name": "The Square Corner Rule", "body": "Nothing rounds. A button, a chip, a table row, a photograph and a language cell are all right-angled; the only permitted \"shape\" event is a 1–2px hairline or a full-bleed photo edge.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep every route under /{lang}/ — there is no locale-free homepage path.",
+      "Do reserve sun-yellow for exactly three things: the primary CTA, the hovered/focused board row, and the current-language cell.",
+      "Do render tabular content (the departures board, the destinations list) as a real <table> with <caption>/<th scope>, not a div-grid pretending to be one.",
+      "Do set font-variant-numeric: tabular-nums on every price, day count, and month range.",
+      "Do layer Roboto Condensed/Roboto after Archivo Narrow/Archivo in the font stack for the Greek subset, so Latin glyphs stay in Archivo and only Greek falls through.",
+      "Do keep the board-settle motion as the only authored animation, gated behind prefers-reduced-motion.",
+      "Do render founders/reviews content only when content/founders.json / content/reviews.json actually has it — no image, no section, no schema when the data is empty or null."
+    ],
+    "donts": [
+      "Don't add an eyebrow/kicker above the H1 or any H2 on this homepage — headings carry themselves. (Older, not-yet-migrated pages — /journal, /destinations, /about — still use .eyebrow; don't extend that pattern into the Continental Timetable world.)",
+      "Don't build icon-card scaffolds (icon + heading + short text in a tile) — tables and rows are the structure here, not cards.",
+      "Don't apply gradient text anywhere in this system.",
+      "Don't run a hero image or photograph behind the H1 or the board — station photography is full-bleed and appears only between boards, never behind text.",
+      "Don't round any corner — there is no border-radius in this system; buttons, chips, and table cells all stay square.",
+      "Don't add a drop shadow to a homepage surface — depth comes from color fields and hairline rules only, not box-shadow.",
+      "Don't invent a trip price, a founder photo, or a review quote/count — render the owner-supplied JSON/data exactly as given, or render nothing at all."
+    ]
+  }
+}

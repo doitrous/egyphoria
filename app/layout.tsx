@@ -12,9 +12,9 @@ import './globals.css'
 //
 // Fix round 1, blocker #4: Roboto Condensed / Roboto both do ship a `greek` subset. Both are
 // loaded `subsets: ['greek']` only (no reason to duplicate latin glyphs Archivo already
-// covers) and appended AFTER the Archivo variables in --serif/--sans (app/globals.css) — CSS
-// font-stack fallback resolves per glyph, not per element, so Latin text still renders in
-// Archivo and only the Greek characters Archivo has no glyphs for fall through to these.
+// covers). In --serif/--sans (app/globals.css) the real family names are listed BEFORE the
+// next/font variables: the generated "Archivo Narrow Fallback" face covers U+0-10FFFF and
+// would otherwise swallow Greek before the per-glyph walk ever reaches Roboto.
 const archivoNarrow = Archivo_Narrow({
   subsets: ['latin', 'latin-ext'],
   weight: ['500', '700'],
