@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createPlan, type Destination } from '@/lib/itinerary'
+import { estimateFromTotal } from '@/lib/trips'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Dict = any
@@ -14,11 +15,20 @@ const INTERESTS = ['history', 'culture', 'nature', 'relax'] as const
 
 /** Home page "Create your itinerary" form — ported from src/client/app.js's builder wiring.
  * Dispatches a "egyphoria:start-plan" CustomEvent that <PlanDialog/> (mounted once in
- * [lang]/layout.tsx) listens for, rather than importing the dialog directly. */
+ * [lang]/layout.tsx) listens for, rather than importing the dialog directly.
+ *
+ * V2-PHASE-9b (The Continental Timetable) restyle: a decorative day-cell strip mirrors the
+ * `days` control (so the form reads like a timetable, "Day 1…Day n" across the top), the
+ * destination checkboxes become toggle "station" chips (CSS only — same inputs, same
+ * submit-time DOM query below), and a running total row (`selected` state, tracked alongside
+ * the existing uncontrolled checkboxes purely for this display) shows days and a real,
+ * sourced "from" total via `estimateFromTotal`. None of the existing submit behaviour, props or
+ * plan-generation logic changes. */
 export default function TripBuilderForm({ dict, destinations }: { dict: Dict; destinations: Record<string, Destination> }) {
   const [days, setDays] = useState(7)
   const [pace, setPace] = useState<'slow' | 'balanced' | 'full'>('balanced')
   const [error, setError] = useState('')
+  const [selected, setSelected] = useState<Set<string>>(new Set(DEFAULT_CHECKED))
 
   function t(key: string, vars?: Record<string, string | number>): string {
     const lookup = (d: Dict) => key.split('.').reduce((o: Dict, k: string) => (o == null ? o : o[k]), d)
@@ -27,6 +37,15 @@ export default function TripBuilderForm({ dict, destinations }: { dict: Dict; de
   }
 
   const destIds = Object.keys(destinations).sort((a, b) => ROUTE_ORDER.indexOf(a) - ROUTE_ORDER.indexOf(b))
+
+  function toggleDestination(id: string, checked: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (checked) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -44,14 +63,29 @@ export default function TripBuilderForm({ dict, destinations }: { dict: Dict; de
     }
   }
 
+  const total = estimateFromTotal([...selected])
+
   return (
     <form id="builder-form" onSubmit={onSubmit}>
+      <div className="builder-day-cells" aria-hidden="true">
+        {Array.from({ length: days }, (_, i) => (
+          <span key={i} className="builder-day-cell">
+            {t('home.weekDaySingle', { n: i + 1 })}
+          </span>
+        ))}
+      </div>
       <fieldset>
         <legend>{t('builder.whereLegend')}</legend>
-        <div id="destination-options">
+        <div id="destination-options" className="builder-stations">
           {destIds.map((id) => (
             <label key={id}>
-              <input type="checkbox" name="destination" value={id} defaultChecked={DEFAULT_CHECKED.has(id)} />
+              <input
+                type="checkbox"
+                name="destination"
+                value={id}
+                defaultChecked={DEFAULT_CHECKED.has(id)}
+                onChange={(e) => toggleDestination(id, e.target.checked)}
+              />
               <span>{destinations[id].name}</span>
             </label>
           ))}
@@ -78,6 +112,10 @@ export default function TripBuilderForm({ dict, destinations }: { dict: Dict; de
           </label>
         ))}
       </fieldset>
+      <div className="builder-total" aria-live="polite">
+        <span>{t('home.builderTotalDays', { n: days })}</span>
+        {total > 0 && <span>{t('home.builderTotalFrom', { amount: `$${total.toLocaleString('en-US')}` })}</span>}
+      </div>
       <p id="builder-error" role="alert">
         {error}
       </p>
