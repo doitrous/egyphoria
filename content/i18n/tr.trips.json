@@ -1,0 +1,170 @@
+{
+  "destinations": {
+    "cairo": {
+      "name": "Kahire ve Giza",
+      "activities": [
+        ["history", "Giza piramitlerini ve Büyük Sfenks'i keşfedin"],
+        ["history", "Büyük Mısır Müzesi'nde kadim hazineleri keşfedin"],
+        ["culture", "Han el-Halili'de gezinin ve bir Mısır kahvesi için mola verin"],
+        ["culture", "Kıpti Kahire'yi ve tarihi sokaklarını keşfedin"],
+        ["history", "Sakkara'daki Basamaklı Piramit'i ziyaret edin"],
+        ["culture", "Keyifli bir yerel yemek yürüyüşünde Mısır klasiklerini tadın"],
+        ["relax", "Nil kıyısında telaşsız bir akşamın tadını çıkarın"],
+        ["nature", "El-Ezher Parkı'nda yürüyüşe çıkın"]
+      ]
+    },
+    "luxor": {
+      "name": "Luksor",
+      "activities": [
+        ["history", "Karnak'ın devasa sütunlarını ve avlularını keşfedin"],
+        ["history", "Batı yakasındaki Krallar Vadisi'ni keşfedin"],
+        ["history", "Hatşepsut Tapınağı'nı ziyaret edin"],
+        ["culture", "Öğleden sonranın ışığı yumuşarken Luksor Tapınağı'nı deneyimleyin"],
+        ["nature", "Batı yakasının manzarası eşliğinde Nil boyunca yürüyün"],
+        ["relax", "Havuz ya da nehir kıyısı için bir öğleden sonrayı serbest bırakın"],
+        ["culture", "Yerel bir pazarda gezinin ve keyifli bir Mısır yemeğinin tadını çıkarın"]
+      ]
+    },
+    "aswan": {
+      "name": "Asvan",
+      "activities": [
+        ["history", "Philae Tapınağı'nın ada tapınağını ziyaret edin"],
+        ["nature", "Hava uygun olursa Nil'de bir felucca yelken gezisine çıkın"],
+        ["culture", "Yerel rehberli bir köy ziyaretiyle Nubya kültürünü keşfedin"],
+        ["relax", "Nil kıyısında yavaş bir öğleden sonranın tadını çıkarın"],
+        ["history", "Abu Simbel'e erken bir kara gezisi için tam bir gün ayırın"],
+        ["culture", "Asvan çarşısını kendi temponuzda keşfedin"],
+        ["nature", "Kitchener Adası'nın bahçelerini ziyaret edin"]
+      ]
+    },
+    "redsea": {
+      "name": "Kızıldeniz",
+      "activities": [
+        ["relax", "Hurgada'da keyifli bir plaj gününe yerleşin"],
+        ["nature", "Koşullar uygun olursa rehberli bir Kızıldeniz şnorkelli dalış gezisine katılın"],
+        ["relax", "Tatil köyünüzde serbest bir günün tadını çıkarın"],
+        ["culture", "Hurgada marinasını keşfedin ve akşam yemeği için bir yer bulun"],
+        ["nature", "Koşullar uygun olursa bir tekne gezisiyle kıyıyı keşfedin"],
+        ["relax", "Bir spa ziyareti ya da su kenarında sakin bir öğleden sonra için zaman ayırın"]
+      ]
+    },
+    "desert": {
+      "name": "Beyaz Çöl",
+      "activities": [
+        ["nature", "Lisanslı bir çöl operatörüyle Beyaz Çöl'ün tebeşir oluşumlarına doğru yol alın"],
+        ["nature", "Yerel bir rehberle Siyah Çöl'ü ve Kristal Dağı'nı keşfedin"],
+        ["relax", "Gün batımında ışığın çöl boyunca değişimini izleyin"],
+        ["nature", "İzinli bir kampta yıldızları seyrederek bir akşam geçirin"],
+        ["culture", "Bahariya Vahası'nda mola verin ve vaha yaşamını öğrenin"]
+      ]
+    },
+    "alexandria": {
+      "name": "İskenderiye",
+      "activities": [
+        ["history", "Kom el-Şukafa Katakompları'nı keşfedin"],
+        ["history", "Deniz kenarındaki Kayıtbay Kalesi'ni ziyaret edin"],
+        ["culture", "Ziyaret saatlerine bağlı olarak İskenderiye Kütüphanesi'ni keşfedin"],
+        ["relax", "Kornişte yürüyün ve deniz kenarında bir öğle yemeğiyle oyalanın"],
+        ["culture", "İskenderiye'nin kafelerini ve Akdeniz karakterini keşfedin"]
+      ]
+    }
+  },
+  "trips": {
+    "egypt-unfolded": {
+      "name": "Mısır, sayfa sayfa",
+      "tag": "İMZA YOLCULUK",
+      "location": "KAHİRE · LUKSOR · ASVAN",
+      "description": "Hayalini kurduğunuz simgeler. Beklemediğiniz anlar.",
+      "detail": "Piramitlerden Yukarı Mısır'ın tapınaklarına dek, Mısır'ın en kalıcı harikaları boyunca özenle temposu ayarlanmış bir rotayı izleyin. Bir pazar sapması, sessiz bir avlu ve Nil'deki yumuşak ışık için yer bırakın.",
+      "highlights": [
+        "1–3. Gün|Kahire, Giza, kadim hazineler ve yerel yaşam",
+        "4–5. Gün|Luksor'a yolculuk; doğu ve batı yakalarını keşfedin",
+        "6–7. Gün|Asvan'a yolculuk; Philae ve Nil'de daha sakin bir ritim"
+      ]
+    },
+    "nile": {
+      "name": "Zamansız Nil boyunca",
+      "tag": "YAVAŞ SEYAHAT",
+      "location": "LUKSOR · ASVAN",
+      "description": "Tapınak sabahları. Felucca öğleden sonraları. Acele etmeye gerek yok.",
+      "detail": "Luksor ile Asvan arasında, tapınak ziyaretleri ve nehir kıyısında zaman içeren karadan bir yolculuk. Bir felucca yelken gezisi ekleyin ve Nil'e karakterini veren kültürleri keşfedin.",
+      "highlights": [
+        "1–2. Gün|Luksor'un tapınakları ve batı yakası",
+        "3. Gün|Güneye, Asvan'a yolculuk ve yerleşme",
+        "4–5. Gün|Philae Tapınağı, Nubya kültürü ve bir felucca yelken gezisi"
+      ]
+    },
+    "desert": {
+      "name": "Dünyanın sessizleştiği yer",
+      "tag": "BİLİNMEYEN YOLLARDA",
+      "location": "BAHARİYA · BEYAZ ÇÖL",
+      "description": "Bu dünyaya ait olmayan manzaralar. Olanaklarla dolu bir gökyüzü.",
+      "detail": "Kahire'yi arkanızda bırakıp Bahariya Vahası'na ve Beyaz Çöl'ün tebeşir oluşumları arasında bir keşif gezisine çıkın. Lisanslı bir yerel çöl operatörüyle tasarlanmıştır; kamp ve erişim izinlere ve koşullara tabidir.",
+      "highlights": [
+        "1. Gün|Kahire'den Bahariya Vahası'na transfer",
+        "2. Gün|Rehberli çöl keşfi, gün batımı ve izinli kamp",
+        "3. Gün|Yavaş bir sabah ve Kahire'ye dönüş transferi"
+      ]
+    },
+    "red-sea": {
+      "name": "Mavinin farklı bir tonu",
+      "tag": "KIYI KAÇAMAĞI",
+      "location": "HURGADA · KIZILDENİZ",
+      "description": "Berrak sular, güneşle ısınan günler ve nefes almaya yer.",
+      "detail": "Hurgada merkezli sakin bir kıyı kaçamağı. Keyifli plaj günlerini, rehberli şnorkelli dalışı ya da her ikisinden birazını seçin. Tekne gezileri ve su aktiviteleri koşullara ve yerel uygunluğa bağlıdır.",
+      "highlights": [
+        "1. Gün|Varış ve su kenarındaki yaşama yerleşme",
+        "2–4. Gün|Plaj zamanı, isteğe bağlı şnorkelli dalış ve bir marina akşamı",
+        "5. Gün|Ayrılıştan önce son bir yavaş sabah"
+      ]
+    },
+    "giza-day": {
+      "name": "Sonsuzlukla bir buluşma",
+      "tag": "MISIR'IN OLMAZSA OLMAZI",
+      "location": "GİZA · KAHİRE",
+      "description": "Piramitlerle tanışın. Tarihi farklı bir ölçekte görün.",
+      "detail": "Giza Platosu'nda odaklanmış bir gün; piramitler, Sfenks ve keyifli bir Mısır öğle yemeği için zaman ayrılmış. Kahire'ye ilk ziyaret için ideal bir başlangıç noktası.",
+      "highlights": [
+        "Sabah|Giza piramitleri ve panoramik manzara noktaları",
+        "Öğle|Büyük Sfenks ve öğle yemeği için zaman",
+        "Öğleden sonra|Kahire'deki konaklama yerinize dönüş"
+      ]
+    },
+    "cairo-day": {
+      "name": "Eski Kahire'nin ruhu",
+      "tag": "KÜLTÜR VE BAĞ",
+      "location": "TARİHİ KAHİRE",
+      "description": "Kıvrımlı sokaklar, parıldayan fenerler, her köşede hikâyeler.",
+      "detail": "Kahire'yi gündelik dokularıyla keşfedin. Tarihi sokakları gezin, Han el-Halili'de dolaşın ve yol boyunca kahve ve Mısır lezzetleri için mola verin.",
+      "highlights": [
+        "Sabah|Tarihi Kahire ve el-Muiz Caddesi boyunca bir yürüyüş",
+        "Öğleden sonra|Han el-Halili ve yerel bir öğle yemeği",
+        "İkindi|Dönüşten önce telaşsız bir kahve molası"
+      ]
+    },
+    "luxor-day": {
+      "name": "Firavunlar arasında bir gün",
+      "tag": "KADİM HARİKALAR",
+      "location": "LUKSOR · DOĞU VE BATI YAKALARI",
+      "description": "Mezarlar, tapınaklar ve başınızı kaldırmak için bin bir neden.",
+      "detail": "Luksor merkezli tam bir gün; seçilmiş batı yakası harikalarını doğu yakasındaki Karnak ile birleştiriyor. Erken başlayın, öğle yemeği için zaman ayırın ve daha yavaş bir tempo isterseniz daha az durak seçin.",
+      "highlights": [
+        "Erken sabah|Krallar Vadisi",
+        "Geç sabah|Hatşepsut Tapınağı ve öğle yemeği",
+        "Öğleden sonra|Luksor'daki konaklama yerinize dönmeden önce Karnak Tapınağı"
+      ]
+    },
+    "alex-day": {
+      "name": "İskenderiye, deniz kokan bir değişim",
+      "tag": "KAHİRE'NİN ÖTESİNDE",
+      "location": "KAHİRE → İSKENDERİYE",
+      "description": "Akdeniz havası ve Mısır'ın bir başka yüzü.",
+      "detail": "Kahire'den Mısır'ın Akdeniz kentine uzun bir günübirlik gezi. Kara yolculuğu için erken başlayın, katakompları ve Kayıtbay'ın deniz kıyısını keşfedin ve dönüş yolculuğundan önce deniz kenarında bir öğle yemeği için zaman bırakın.",
+      "highlights": [
+        "Erken sabah|Kahire'den İskenderiye'ye kara transferi",
+        "Gündüz|Katakomplar, Kayıtbay deniz kıyısı ve deniz kenarında öğle yemeği",
+        "Akşam|Kahire'ye dönüş yolculuğu"
+      ]
+    }
+  }
+}

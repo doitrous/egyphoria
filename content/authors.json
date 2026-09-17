@@ -1,0 +1,9 @@
+{
+  "egyphoria-editorial": {
+    "name": "Egyphoria Editorial",
+    "title": "TODO(omar): the old static site never named an individual author or reviewer — it credits three founders (\"Dr. Yahya, Dr. Jimmy, Dr. Omar\") in src/i18n/en.json's `behind` copy. Replace this with a real named author/reviewer, or keep a team byline deliberately and just confirm the title.",
+    "credentials": "TODO(omar): no licence/credential claim existed on the old site — do not invent one. Add real credentials here only if true.",
+    "sameAs": [],
+    "bio": "TODO(omar) bio — replace before launch. The old site's only \"who we are\" copy is: \"We're Dr. Yahya, Dr. Jimmy, and Dr. Omar. Three doctors who found our way into tourism, brought together by a love for Egypt and the people who come to experience it. For more than six years, we've been making Egyptian travel experiences better.\" (src/i18n/en.json, `behind.p1`/`behind.p2`). Turn that into a real editorial bio, or write a new one — do not leave this placeholder live at launch."
+  }
+}

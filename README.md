@@ -1,112 +1,113 @@
-# Egyphoria website
+# Egyphoria
 
-A fast, static, multilingual site with an itinerary builder, trip pages,
-a content hub (journal), full SEO, and PayTabs checkout.
+Egypt tour itineraries, trip pages, a journal, and an itinerary builder — a Next.js 16 (App
+Router) site wired to [seo-runtime](https://github.com/doitrous/seo-runtime)
+(`@omary98/seo-runtime-core` + `@omary98/seo-runtime-next`, pinned at `0.1.6`), built from
+`doitrous/site-template`. Renders correctly with no hub configured — every route falls back to a
+sensible default — and picks up real metadata, entity JSON-LD, and hub-pushed journal articles the
+moment `SEO_HUB_URL`/`SEO_HUB_SECRET` are set and a snapshot has synced.
 
-## Build
+Six locales: `en` (default), `nl`, `fr`, `el`, `tr`, `es`, served at `/{lang}/...`. `/help`,
+`/tools/*`, `/authors/*` and `/editorial-guidelines` are locale-free (`?lang=` instead of a path
+segment), per the template's own contract.
+
+## Run it locally
 
 ```bash
-node build.mjs
+npm install
+cp .env.example .env.local        # fill in SITE_URL; leave SEO_HUB_* blank to run with no hub
+npm run dev
 ```
 
-Everything under `dist/` is generated. Source of truth lives in `src/`.
-Edit `src/`, run the build, commit `dist/`.
+Then check `/en`, `/el/trips/giza-day`, `/en/destinations/giza`, `/help`, `/tools/trip-cost`.
 
-## Test
+## Environment variables
 
-```bash
-node build.mjs && node smoke-test.mjs
-```
+See `.env.example` for the full list. In short: `SEO_HUB_URL`/`SEO_HUB_SECRET`/`SEO_SITE_SLUG` are
+all optional until this site has a hub profile; `SITE_URL` is the public origin (no trailing
+slash); `PAYTABS_PROFILE_ID`/`PAYTABS_SERVER_KEY`/`PAYTABS_REGION`/`PAYTABS_CURRENCY` are the same
+names the old static build used, for the "Book this journey" checkout flow.
 
-A zero-dependency SEO smoke test: `dist/sitemap.xml` has at least one
-absolute `https://` `<loc>` and a `<lastmod>`, `dist/robots.txt` has a
-`Sitemap:` line, and the homepage has an `<h1` and `rel="canonical"`.
+## Where content lives
 
-## Where things live
+| I want to… | Edit |
+|---|---|
+| Change a trip's price | `lib/trips.ts` → `TRIP_PRICES` (also update `app/api/paytabs/create/route.ts`'s own `PRICES` map — see below) |
+| Reword UI strings (English) | `content/i18n/en.json` |
+| Translate UI strings | `content/i18n/<lang>.json` |
+| Edit trip/destination copy (English) | `content/i18n/en.trips.json` |
+| Translate trip/destination copy | `content/i18n/<lang>.trips.json` |
+| Add a journal post | `content/journal/<slug>.json` (English only today — see TODO below), then register it in `lib/journal.ts`'s `LOCAL_JOURNAL` map |
+| Edit a help entry | `content/help/<slug>.json`, registered in `lib/help.ts`'s `LOCAL_HELP` map |
+| Edit the trip-cost calculator | `content/tools/trip-cost.json` (one entry per locale) |
+| Edit the author bio | `content/authors.json` → `egyphoria-editorial` |
+| Restyle | `app/globals.css` (the original design's CSS, ported byte-for-byte, plus a clearly marked "new utility classes" section at the bottom) |
+| Client-side behaviour (scroll reveal, itinerary builder, plan dialog) | `components/*.tsx` |
 
-| I want to…                    | Edit                                         |
-|-------------------------------|----------------------------------------------|
-| Change a price                | `src/config.mjs` → `prices`                  |
-| Change site domain / currency | `src/config.mjs` → `site`                    |
-| Add / remove a language       | `src/config.mjs` → `languages` + `src/i18n/<code>.json` |
-| Reword UI text (English)      | `src/i18n/en.json`                           |
-| Translate UI text             | `src/i18n/<code>.json`                        |
-| Edit trip content (English)   | `src/trips.mjs`                              |
-| Translate trip content        | `src/i18n/<code>.trips.json`                  |
-| Write a journal article       | add `src/content/blog/<slug>.md`             |
-| Restyle                       | `src/styles.css`                             |
-| Client behaviour              | `src/client/*.js`                            |
+`app/api/paytabs/create/route.ts` keeps its own server-authoritative `PRICES` map rather than
+importing `lib/trips.ts`'s — deliberate duplication across the trust boundary (a payment route
+should never trust a value it didn't define itself); keep the two in sync by hand.
 
-### Journal articles
+### Destinations vs. the old site's six place keys
 
-Drop a markdown file in `src/content/blog/`. Front matter:
+The old static build's `trips.mjs` has six destination keys (`cairo`, `luxor`, `aswan`, `redsea`,
+`desert`, `alexandria`). The ticket asked for seven destination pages (`cairo`, `giza`, `luxor`,
+`alexandria`, `nile`, `desert`, `red-sea`). `lib/trips.ts` documents the mapping in full
+(`DESTINATION_SOURCES`): `cairo` is split into a `cairo` city destination and a `giza` plateau
+destination by re-slicing the original `cairo` activity list (no invented content — every activity
+already existed), and `aswan` is renamed `nile`. The itinerary builder still plans against the
+original six raw keys (`lib/trips.ts`'s `getRawDestinations`) since splitting for SEO has no
+reason to fragment the trip planner's own activity pool. `test/trips.test.ts` verifies the split
+loses and duplicates nothing.
 
-```
----
-title: ...
-description: ...        # used for SEO + card
-date: 2026-02-01
-image: giza             # an image in dist/assets/ (no extension)
-category: GUIDES
-readTime: 6
-slug: my-post
-lang: en
----
-Body in markdown. Link internally with [[trip:giza-day|An audience with eternity]].
-```
+## Testing
 
-Internal `[[trip:<id>|label]]` links are the easy way to build internal
-backlinks from articles to trip pages (good for SEO).
+- `npm test` — `node --test` (native runner, TypeScript stripped, no framework). Covers hreflang
+  generation, the `/seo-admin` gate, tool config parsing + one calculation per tool kind, the
+  vanilla bundle, local content shape (authors/help), the destination/trip data split, the
+  itinerary builder's pure logic, and every legacy URL from the old site's sitemap redirecting in
+  one hop to a route this app serves (`test/legacy-redirects.test.ts`).
+- `npm run lint` — `eslint`.
+- `npm run build` — `next build`, standalone output.
+- `./scripts/smoke.sh <base-url>` — run against a built + started server. Passes with no hub
+  configured at all.
 
-## SEO
+## How the hub feeds this site
 
-Generated automatically: `sitemap.xml` (all languages + `hreflang`
-alternates + `lastmod`, from a post's front-matter `date` or otherwise its
-content file's mtime), `robots.txt` (explicit allow/disallow per crawler,
-including GPTBot/ClaudeBot allowed and CCBot/Bytespider/Meta-ExternalAgent/
-Amazonbot disallowed), canonical URLs, Open Graph / Twitter cards, and
-JSON-LD (`TravelAgency`, `TouristTrip`/`Offer`, `Blog`, `BlogPosting`).
-After deploy, submit `https://egyphoria.com/sitemap.xml` in Google Search
-Console.
+Same contract as the template: metadata/canonical/hreflang/JSON-LD via `lib/seo.ts`'s
+`seo.resolve`/`seo.metadata`, entity JSON-LD via `settings.entity`, authors/help/tools via
+`settings.authors[]`/`settings.helpEntries[]`/`settings.tools[]` with a local-file fallback
+(`content/authors.json`, `content/help/*.json`, `content/tools/*.json`) until a hub profile
+exists, and journal articles via `store.listArticles`/`findArticleBySlug` merged with the two
+migrated local posts in `content/journal/*.json` (hub wins on a slug collision).
 
-## Payments (PayTabs)
+## Legacy URL redirects
 
-Checkout needs a host that runs serverless functions (the PayTabs **server
-key is secret** and must never reach the browser). The endpoints live in
-`api/` and are Vercel-ready.
+The old static build served English at the root (no `/en` prefix) and every page trailing-slashed.
+`lib/legacy-redirects.ts` is a pure, unit-tested function (`test/legacy-redirects.test.ts` runs it
+against every `<loc>` from the old `dist/sitemap.xml`) that 301s every old URL shape to this app's
+routes in one hop; `proxy.ts` calls it right after the hub's own redirect table and before locale
+detection.
 
-### Deploy on Vercel
+## Deploying (Coolify)
 
-1. Import the repo in Vercel. `vercel.json` already sets build (`node
-   build.mjs`) and output (`dist`).
-2. In **Project → Settings → Environment Variables**, add:
+`Dockerfile` is multi-stage with `output: "standalone"` (see `next.config.ts`). **Coolify must be
+set to the Dockerfile build pack**, not Nixpacks. No build arguments needed; every environment
+variable is read at request time.
 
-   | Name                 | Value                               |
-   |----------------------|-------------------------------------|
-   | `PAYTABS_PROFILE_ID` | your PayTabs profile id             |
-   | `PAYTABS_SERVER_KEY` | your PayTabs **server key** (secret) |
-   | `PAYTABS_REGION`     | `EGY` (or ARE/SAU/OMN/JOR/GLOBAL)   |
-   | `PAYTABS_CURRENCY`   | `USD` (optional)                    |
-   | `SITE_URL`           | `https://egyphoria.com`             |
+## Known gaps (`TODO(omar)`)
 
-3. In your PayTabs dashboard, allow your domain and set the callback to
-   `https://egyphoria.com/api/paytabs-callback`.
-4. Deploy. The **Book this journey** button now creates a hosted PayTabs
-   payment and redirects the customer; after paying they land on
-   `/booking/complete/`.
-
-Prices are enforced **server-side** in `api/paytabs-create.js` (the browser
-can't change the amount). Keep that `PRICES` map in sync with
-`src/config.mjs`.
-
-`api/paytabs-callback.js` verifies PayTabs' HMAC signature. Add your
-fulfilment (email the team / mark paid) where the `ponytail:` stub is.
-
-Never commit real credentials — use `.env` locally (see `.env.example`);
-`.env` is gitignored.
-
-## Static-only hosting
-
-If you keep the current static host, everything works **except** live
-checkout — the Book button falls back to a "contact us" message. Move to
-Vercel (or any serverless host) to enable payments.
+- `content/authors.json`'s `egyphoria-editorial` entry has placeholder `title`/`credentials`/`bio`
+  text — replace with a real bio.
+- `content/contact` (`app/[lang]/contact/page.tsx`)'s local `TravelAgency` JSON-LD fallback has an
+  empty `sameAs` — add real social profile URLs once they exist.
+- `site.config.ts`'s `contact.email`/`contact.phone`/`contact.addressLines` are placeholders.
+- `app/[lang]/privacy/page.tsx` and `app/[lang]/terms/page.tsx` are new pages (the old site never
+  had them) with generic placeholder legal text — have this reviewed before launch.
+- Journal posts (`content/journal/*.json`) render the same English body under every locale's URL —
+  commission real nl/fr/el/tr/es translations once a native reviewer is available.
+- Every destination and trip page's word count is below the floors in
+  `14-word-count-keyword-rules.md` (destinations ~54–98 words against a 300-word Category floor;
+  trips ~147–168 words against a 500-word Tour floor) — this reuses only the old site's real copy,
+  with nothing invented to pad it out; expanding it with genuine content is follow-up work for a
+  human writer.
