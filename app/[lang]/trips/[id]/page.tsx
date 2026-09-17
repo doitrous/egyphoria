@@ -9,6 +9,7 @@ import { seo } from '@/lib/seo'
 import { t, dictFor } from '@/lib/i18n'
 import { TRIP_IDS, TRIP_PRICES, getTrip, getDestination, getRawDestinations, formatPrice, CURRENCY } from '@/lib/trips'
 import TripActions from '@/components/TripActions'
+import { hubBodyFor, hubBodySlugFor } from '@/lib/hub-body'
 
 type Props = { params: Promise<{ lang: string; id: string }> }
 
@@ -19,7 +20,8 @@ type Props = { params: Promise<{ lang: string; id: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, id } = await params
   if (!TRIP_IDS.includes(id)) return {}
-  return pageMetadata(`/trips/${id}`, lang)
+  const hubBody = await hubBodyFor(lang, hubBodySlugFor('trip', id))
+  return pageMetadata(`/trips/${id}`, lang, hubBody ?? undefined)
 }
 
 export default async function TripPage({ params }: Props) {
@@ -33,6 +35,10 @@ export default async function TripPage({ params }: Props) {
   const resolved = await seo.resolve(path, lang)
   const canonical = resolved.canonical
   const origin = new URL(canonical, SITE_CONFIG.baseUrl).origin
+  // The hub's brain can write this trip's descriptive copy under a fixed slug convention (see
+  // lib/hub-body.ts) — it replaces only the description/detail paragraphs below; facts
+  // (highlights, price, itinerary builder, breadcrumbs, JSON-LD structure) stay as-is either way.
+  const hubBody = await hubBodyFor(lang, hubBodySlugFor('trip', id))
 
   const touristTrip = {
     '@context': 'https://schema.org', '@type': 'TouristTrip', name: trip.name, description: trip.description,
@@ -51,7 +57,13 @@ export default async function TripPage({ params }: Props) {
       { '@type': 'ListItem', position: 3, name: trip.name, item: canonical },
     ],
   }
-  const jsonld = [...resolved.jsonld, touristTrip, breadcrumb]
+  const faqPage = hubBody?.faq.length
+    ? {
+        '@context': 'https://schema.org', '@type': 'FAQPage',
+        mainEntity: hubBody.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }
+    : null
+  const jsonld = [...resolved.jsonld, touristTrip, breadcrumb, ...(faqPage ? [faqPage] : [])]
 
   return (
     <article data-reveal>
@@ -72,15 +84,32 @@ export default async function TripPage({ params }: Props) {
       <p className="trip-meta">{trip.location}</p>
       <Image src={`/assets/${trip.image}.jpg`} alt={trip.name} width={1600} height={900} priority />
 
-      <p>
-        {trip.description}{' '}
-        {destination && (
-          <>
-            {t(lang, 'trip.route')}: <Link href={`/${lang}/destinations/${destination.id}`}><strong>{destination.name}</strong></Link>.
-          </>
-        )}
-      </p>
-      <p>{trip.detail}</p>
+      {hubBody ? (
+        <div className="hub-body" dangerouslySetInnerHTML={{ __html: hubBody.bodyHtml }} />
+      ) : (
+        <>
+          <p>
+            {trip.description}{' '}
+            {destination && (
+              <>
+                {t(lang, 'trip.route')}: <Link href={`/${lang}/destinations/${destination.id}`}><strong>{destination.name}</strong></Link>.
+              </>
+            )}
+          </p>
+          <p>{trip.detail}</p>
+        </>
+      )}
+      {hubBody && hubBody.faq.length > 0 && (
+        <section>
+          <h2>{t(lang, 'tools.faq')}</h2>
+          {hubBody.faq.map((f, i) => (
+            <div key={i}>
+              <h3>{f.q}</h3>
+              <p>{f.a}</p>
+            </div>
+          ))}
+        </section>
+      )}
 
       <section>
         <h2>{t(lang, 'trip.highlights')}</h2>

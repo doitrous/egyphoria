@@ -81,6 +81,29 @@ Same contract as the template: metadata/canonical/hreflang/JSON-LD via `lib/seo.
 exists, and journal articles via `store.listArticles`/`findArticleBySlug` merged with the two
 migrated local posts in `content/journal/*.json` (hub wins on a slug collision).
 
+## Hub-written destination/trip copy (`lib/hub-body.ts`)
+
+The hub can write a destination or trip page's descriptive copy through the same article-ingest
+channel as journal posts, without a code change, using a fixed slug convention:
+
+- Destination pages: `destination-{id}` — `destination-cairo`, `destination-giza`,
+  `destination-luxor`, `destination-alexandria`, `destination-nile`, `destination-desert`,
+  `destination-red-sea`.
+- Trip pages: `trip-{id}` — `trip-egypt-unfolded`, `trip-nile`, `trip-desert`, `trip-red-sea`,
+  `trip-giza-day`, `trip-cairo-day`, `trip-luxor-day`, `trip-alex-day`.
+
+`hubBodyFor(lang, slug)` looks up `store.findArticleBySlug`; when it finds one, the page renders
+its `bodyHtml` as the descriptive copy (replacing the trip page's description/detail paragraphs;
+added as new content on the destination page, which has none today) plus an FAQ block +
+`FAQPage` JSON-LD, and `generateMetadata` prefers its `metaTitle`/`metaDescription` over the
+generic local fallback (a real hub `page_seo` record still wins over both). Absent a hub body,
+both pages render exactly as they did before this existed.
+
+These 15 slugs are **not** journal posts: `lib/journal.ts`'s `listJournal` and
+`app/sitemap.xml/route.ts` both filter `HUB_BODY_SLUGS` out of the article list, and
+`lib/legacy-redirects.ts` 301s a direct `/{lang}/journal/{slug}` hit on one of them to the real
+destination/trip page.
+
 ## Legacy URL redirects
 
 The old static build served English at the root (no `/en` prefix) and every page trailing-slashed.

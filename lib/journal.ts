@@ -8,6 +8,7 @@ import { renderBody, type StoredArticle } from '@omary98/seo-runtime-core'
 import howManyDays from '../content/journal/how-many-days-in-egypt.json' with { type: 'json' }
 import firstTimePyramids from '../content/journal/first-time-pyramids-of-giza.json' with { type: 'json' }
 import { store } from './store.ts'
+import { HUB_BODY_SLUGS } from './hub-body.ts'
 
 type LocalJournalEntry = { title: string; description: string; date: string; image: string; category: string; readTime: number; bodyMd: string }
 type LocalJournalFile = Record<string, LocalJournalEntry>
@@ -52,7 +53,9 @@ export type JournalListItem = { slug: string; lang: string; title: string; descr
 /** /{lang}/journal's index: every hub article for this language plus any local post the hub
  * hasn't taken over (matched by slug), newest first. */
 export async function listJournal(lang: string): Promise<JournalListItem[]> {
-  const hubArticles = await store.listArticles(lang)
+  // HUB_BODY_SLUGS' 15 articles are destination/trip page copy pushed through the same article
+  // channel, not journal posts — they never show up in the journal index (see lib/hub-body.ts).
+  const hubArticles = (await store.listArticles(lang)).filter((a) => !HUB_BODY_SLUGS.includes(a.slug))
   const hubSlugs = new Set(hubArticles.map((a) => a.slug))
   const local = LOCAL_JOURNAL_SLUGS
     .filter((slug) => !hubSlugs.has(slug))

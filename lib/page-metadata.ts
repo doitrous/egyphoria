@@ -19,12 +19,19 @@ export const NOINDEX_PATHS: ReadonlySet<string> = new Set(['/privacy', '/terms']
  * `page: null`. This fills all three in from real local content (i18n strings, trip copy,
  * SITE_CONFIG.baseUrl) UNDER whatever the hub provides, same floor-not-competing-source pattern
  * as the hreflang merge below.
+ *
+ * `hubBody` is the optional middle tier: a destination/trip page whose hub-pushed body
+ * (lib/hub-body.ts) carries its own metaTitle/metaDescription passes them here, so they win over
+ * the generic local fallback but still lose to a real hub page_seo record (`base.title`/
+ * `base.description`) the moment the hub sets one for this exact path.
  */
-export async function pageMetadata(pathWithoutLang: string, lang: string): Promise<Metadata> {
+export async function pageMetadata(
+  pathWithoutLang: string, lang: string, hubBody?: { metaTitle?: string; metaDescription?: string },
+): Promise<Metadata> {
   const base = await seo.metadata({ path: `/${lang}${pathWithoutLang}`, lang })
   const hubLanguages = (base.alternates as { languages?: Record<string, string> } | undefined)?.languages ?? {}
-  const title = base.title || localTitle(pathWithoutLang, lang)
-  const description = base.description || localDescription(pathWithoutLang, lang)
+  const title = base.title || hubBody?.metaTitle || localTitle(pathWithoutLang, lang)
+  const description = base.description || hubBody?.metaDescription || localDescription(pathWithoutLang, lang)
   const rawCanonical = (base.alternates as { canonical?: string } | undefined)?.canonical
   const canonical = rawCanonical ? toAbsolute(rawCanonical) : undefined
   return {

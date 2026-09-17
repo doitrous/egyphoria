@@ -5,7 +5,15 @@
 // node --test against every <loc> in the old dist/sitemap.xml (see test/legacy-redirects.test.ts)
 // and is called from proxy.ts after the hub redirect check, before locale detection, per the
 // ticket's redirect map.
+import { HUB_BODY_SLUGS } from './hub-body.ts'
+
 const OTHER_LOCALES = ['nl', 'fr', 'el', 'tr', 'es']
+// V2 hub-body: a hub-pushed article under one of HUB_BODY_SLUGS' 15 fixed slugs is a
+// destination/trip page's own copy now, not a journal post (lib/journal.ts's listJournal and
+// app/sitemap.xml/route.ts both filter it out of the journal listing/sitemap for the same
+// reason), so a direct hit on its own /journal/{slug} URL 301s to the real page — for all six
+// languages, not just the "other" five, since this path is already lang-prefixed either way.
+const HUB_BODY_JOURNAL_ROUTE = /^\/(en|nl|fr|el|tr|es)\/journal\/(destination|trip)-([a-z0-9-]+)$/
 // /help, /help/{slug}, /tools/trip-cost, /tools/trip-cost/embed, /editorial-guidelines: the
 // locale-free routes the runtime renders via ?lang= instead of a /{lang} path segment.
 const LOCALE_FREE_ROUTE = /^\/(help|tools\/trip-cost(?:\/embed)?|editorial-guidelines)(\/.*)?$/
@@ -26,6 +34,12 @@ export function legacyRedirectTarget(pathname: string): string | null {
 
   const hasTrailingSlash = pathname.length > 1 && pathname.endsWith('/')
   const bare = hasTrailingSlash ? pathname.slice(0, -1) : pathname
+
+  const hubBodyMatch = bare.match(HUB_BODY_JOURNAL_ROUTE)
+  if (hubBodyMatch) {
+    const [, lang, kind, id] = hubBodyMatch
+    if (HUB_BODY_SLUGS.includes(`${kind}-${id}`)) return `/${lang}/${kind === 'destination' ? 'destinations' : 'trips'}/${id}`
+  }
 
   const langMatch = bare.match(/^\/(nl|fr|el|tr|es)((?:\/.*)?)$/)
   if (langMatch) {
