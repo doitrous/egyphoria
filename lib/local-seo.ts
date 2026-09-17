@@ -16,7 +16,9 @@ import { toAbsolute } from './hreflang.ts'
 const STATIC_PATHS = ['', '/destinations', '/trips', '/journal', '/photography', '/booking/complete', '/about', '/contact', '/privacy', '/terms']
 
 function titleFor(path: string, lang: string): string {
-  if (path === '') return t(lang, 'hero.eyebrow')
+  // The hub snapshot renders page.title + brandSuffix (skipped when the title already ends
+  // with it), so the registry must report the real meta title, not the old hero tagline.
+  if (path === '') return t(lang, 'home.metaTitle')
   if (path === '/destinations') return t(lang, 'journeys.eyebrow')
   if (path === '/trips') return t(lang, 'journeys.title')
   if (path === '/journal') return t(lang, 'journal.title')
