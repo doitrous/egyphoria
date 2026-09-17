@@ -8,6 +8,7 @@ import { SITE_CONFIG } from '@/site.config'
 import { seo } from '@/lib/seo'
 import { t } from '@/lib/i18n'
 import { DESTINATION_IDS, DESTINATION_TRIPS, getDestination, getTrip, formatPrice } from '@/lib/trips'
+import { hubBodyFor, hubBodySlugFor } from '@/lib/hub-body'
 
 type Props = { params: Promise<{ lang: string; id: string }> }
 
@@ -18,7 +19,8 @@ type Props = { params: Promise<{ lang: string; id: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, id } = await params
   if (!DESTINATION_IDS.includes(id)) return {}
-  return pageMetadata(`/destinations/${id}`, lang)
+  const hubBody = await hubBodyFor(lang, hubBodySlugFor('destination', id))
+  return pageMetadata(`/destinations/${id}`, lang, hubBody ?? undefined)
 }
 
 export default async function DestinationPage({ params }: Props) {
@@ -31,6 +33,10 @@ export default async function DestinationPage({ params }: Props) {
   const canonical = resolved.canonical
   const tripIds = DESTINATION_TRIPS[id] ?? []
   const trips = tripIds.map((tripId) => getTrip(tripId, lang)!).filter(Boolean)
+  // The hub's brain can write this page's descriptive copy under a fixed slug convention (see
+  // lib/hub-body.ts) — everything else here (facts, trip list, breadcrumbs, JSON-LD structure)
+  // stays exactly as it renders today when the hub hasn't written this one yet.
+  const hubBody = await hubBodyFor(lang, hubBodySlugFor('destination', id))
 
   const collectionPage = {
     '@context': 'https://schema.org', '@type': 'CollectionPage', name: destination.name, url: canonical,
@@ -44,7 +50,13 @@ export default async function DestinationPage({ params }: Props) {
       { '@type': 'ListItem', position: 3, name: destination.name, item: canonical },
     ],
   }
-  const jsonld = [...resolved.jsonld, collectionPage, breadcrumb]
+  const faqPage = hubBody?.faq.length
+    ? {
+        '@context': 'https://schema.org', '@type': 'FAQPage',
+        mainEntity: hubBody.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }
+    : null
+  const jsonld = [...resolved.jsonld, collectionPage, breadcrumb, ...(faqPage ? [faqPage] : [])]
 
   return (
     <article data-reveal>
@@ -62,6 +74,22 @@ export default async function DestinationPage({ params }: Props) {
       </nav>
       <h1>{destination.name}</h1>
       <Image src={`/assets/${destination.image}.jpg`} alt={`${destination.name}, Egypt`} width={1600} height={900} priority />
+      {hubBody && (
+        <>
+          <div className="hub-body" dangerouslySetInnerHTML={{ __html: hubBody.bodyHtml }} />
+          {hubBody.faq.length > 0 && (
+            <section>
+              <h2>{t(lang, 'tools.faq')}</h2>
+              {hubBody.faq.map((f, i) => (
+                <div key={i}>
+                  <h3>{f.q}</h3>
+                  <p>{f.a}</p>
+                </div>
+              ))}
+            </section>
+          )}
+        </>
+      )}
       <section>
         <h2>{t(lang, 'way.eyebrow')}</h2>
         <ul>
