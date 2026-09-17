@@ -1,53 +1,16 @@
-import { createSeo, type ProviderPage } from '@omary98/seo-runtime-next'
-import { SITE_CONFIG } from '@/site.config'
-import { store } from './store'
-import { DESTINATION_IDS, TRIP_IDS, getDestination, getTrip } from './trips'
-import { t } from './i18n'
-import { LOCAL_JOURNAL_SLUGS, getLocalArticle } from './journal'
+import { createSeo } from '@omary98/seo-runtime-next'
+// Relative, with `.ts` extensions: node's own ESM loader (used by `npm test`) doesn't understand
+// the `@/` alias, and needs the extension explicit too — same reasoning as lib/trips.ts.
+import { SITE_CONFIG } from '../site.config.ts'
+import { store } from './store.ts'
+import { providerPages } from './local-seo.ts'
+import { toAbsolute } from './hreflang.ts'
 
-// Every static route this site serves under /{lang}, in every configured language — this list
-// is both the hub's page registry (GET /api/seo/pages) and, together with the runtime's own
-// article pages, the sitemap (01-site-setup.md, 07-content-hub.md).
-const STATIC_PATHS = ['', '/destinations', '/trips', '/journal', '/photography', '/booking/complete', '/about', '/contact', '/privacy', '/terms']
+// Re-exported for callers that only need the page registry (e.g. the sitemap fallback) without
+// pulling in the runtime instance below.
+export { providerPages }
 
-function titleFor(path: string, lang: string): string {
-  if (path === '') return t(lang, 'hero.eyebrow')
-  if (path === '/destinations') return t(lang, 'journeys.eyebrow')
-  if (path === '/trips') return t(lang, 'journeys.title')
-  if (path === '/journal') return t(lang, 'journal.title')
-  if (path === '/photography') return 'Photography'
-  if (path === '/booking/complete') return t(lang, 'booking.title')
-  if (path === '/about') return t(lang, 'behind.title')
-  if (path === '/contact') return t(lang, 'behind.cta')
-  if (path === '/privacy') return 'Privacy'
-  if (path === '/terms') return 'Terms'
-  return path
-}
-
-async function providerPages(): Promise<ProviderPage[]> {
-  const now = new Date().toISOString()
-  const pages: ProviderPage[] = []
-  for (const lang of SITE_CONFIG.locales) {
-    for (const path of STATIC_PATHS) {
-      pages.push({ key: `page:${path || 'home'}`, type: 'page', lang, path: `/${lang}${path}`, title: titleFor(path, lang), updatedAt: now })
-    }
-    for (const id of DESTINATION_IDS) {
-      const d = getDestination(id, lang)
-      pages.push({ key: `destination:${id}`, type: 'category', lang, path: `/${lang}/destinations/${id}`, title: d?.name ?? id, updatedAt: now })
-    }
-    for (const id of TRIP_IDS) {
-      const trip = getTrip(id, lang)
-      pages.push({ key: `trip:${id}`, type: 'tour', lang, path: `/${lang}/trips/${id}`, title: trip?.name ?? id, updatedAt: now })
-    }
-    for (const slug of LOCAL_JOURNAL_SLUGS) {
-      const article = getLocalArticle(slug, lang)
-      if (article) pages.push({ key: `journal:${slug}`, type: 'article', lang, path: `/${lang}/journal/${slug}`, title: article.title, updatedAt: article.date })
-    }
-  }
-  return pages
-}
-
-export const seo = createSeo({
+const seoRuntime = createSeo({
   store,
   supported: SITE_CONFIG.locales,
   pages: providerPages,
@@ -57,6 +20,19 @@ export const seo = createSeo({
   // health ping reports it accurately (packages/CONTRACT.md: Next defaults `share` to false).
   share: true,
 })
+
+// `resolveSeo`'s own `canonical` (core-js resolve.ts) is only absolute once the hub has synced
+// settings.baseUrls for this lang — on a cold store it falls back to the bare path (e.g. "/en").
+// Every page here treats `resolved.canonical` as already absolute (ShareBlock, TouristTrip/
+// Offer/BreadcrumbList `url`/`item` fields) — wrapping `resolve` once here, rather than at every
+// call site, is the root-cause fix.
+export const seo = {
+  ...seoRuntime,
+  resolve: async (path: string, lang: string) => {
+    const resolved = await seoRuntime.resolve(path, lang)
+    return { ...resolved, canonical: toAbsolute(resolved.canonical) }
+  },
+}
 
 // CONTRACT.md: the periodic pull (every 6h) and hourly health ping, started once per server
 // process. Never imported by proxy.ts, which reaches into `./store` directly instead — this

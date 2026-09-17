@@ -1,11 +1,11 @@
-import { pageMetadata } from '@/lib/page-metadata'
+import { pageMetadata, NOINDEX_PATHS } from '@/lib/page-metadata'
 import { SITE_CONFIG } from '@/site.config'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   const base = await pageMetadata('/terms', lang)
-  // Ticket: /{lang}/terms is noindex.
-  return { ...base, robots: { index: false, follow: true } }
+  // Ticket: /{lang}/terms is noindex — see lib/page-metadata.ts's NOINDEX_PATHS.
+  return NOINDEX_PATHS.has('/terms') ? { ...base, robots: { index: false, follow: true } } : base
 }
 
 // New page (the old static build never had one) — required by 01-site-setup.md's trust-pages

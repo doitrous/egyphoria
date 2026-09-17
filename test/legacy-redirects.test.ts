@@ -99,3 +99,8 @@ test('legacyRedirectTarget leaves already-canonical new-style paths alone', () =
   assert.equal(legacyRedirectTarget('/help'), null)
   assert.equal(legacyRedirectTarget('/help/do-i-need-a-visa-to-visit-egypt'), null)
 })
+
+test('legacyRedirectTarget produces no redirect for an unrecognized locale or path (proxy.ts rewrites these to the default locale and lets Next 404 — never a redirect to a nested nonexistent page)', () => {
+  assert.equal(legacyRedirectTarget('/xx/trips/giza-day'), null)
+  assert.equal(legacyRedirectTarget('/en/nonexistent'), null)
+})

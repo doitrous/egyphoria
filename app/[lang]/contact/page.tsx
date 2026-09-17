@@ -15,21 +15,13 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
   const resolved = await seo.resolve(path, lang)
   const { contact } = SITE_CONFIG
 
-  // 01-site-setup.md: Contact needs Organization/TravelAgency schema with `sameAs`. The hub's
-  // own settings.entity (once configured) already renders on every page via the layout's
-  // <SeoJsonLd>; this is the local fallback so /contact carries the schema before that exists.
-  // TODO(omar): sameAs is empty — add real social profile URLs once they exist.
-  const localEntity = {
-    '@context': 'https://schema.org', '@type': 'TravelAgency', name: SITE_CONFIG.name,
-    email: contact.email, address: contact.addressLines.join(', '), sameAs: [] as string[],
-    url: resolved.canonical,
-  }
-  const hasHubEntity = resolved.jsonld.some((e) => (e as { '@type'?: string })['@type'] === 'TravelAgency' || (e as { '@type'?: string })['@type'] === 'Organization')
-  const jsonld = hasHubEntity ? resolved.jsonld : [...resolved.jsonld, localEntity]
+  // The Organization/TravelAgency fallback now lives in [lang]/layout.tsx (every page under
+  // [lang] needs it, not just this one) — see its own comment for why. Nothing contact-specific
+  // to add here any more.
 
   return (
     <article data-reveal>
-      <SeoJsonLd seo={{ ...resolved, jsonld }} />
+      <SeoJsonLd seo={resolved} />
       <h1>{t(lang, 'behind.cta')}</h1>
       <ul>
         <li>Email: {contact.email}</li>

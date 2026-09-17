@@ -14,7 +14,10 @@ export type SiteConfig = {
   defaultLocale: string
   /** Appended to every page title unless the title already ends with it (same rule as the hub's brandSuffix). */
   brandSuffix: string
-  contact: { email: string; phone: string; whatsapp?: string; addressLines: string[] }
+  /** Relative to `baseUrl` — the `logo` field for the local Organization/TravelAgency JSON-LD
+   * fallback ([lang]/layout.tsx) rendered while the hub has no `settings.entity` of its own. */
+  logoPath: string
+  contact: { email: string; phone: string; whatsapp?: string; addressLines: string[]; sameAs: string[] }
   /**
    * Footer "Popular searches" block (10-internal-linking-menu-footer.md): 6-12 keyword-phrase
    * links to pillar/category pages, per language — the "keyword footer", on every page. Falls
@@ -56,17 +59,29 @@ function popularSearchesFor(lang: string): { label: string; href: string }[] {
 
 const LOCALES = ['en', 'nl', 'fr', 'el', 'tr', 'es']
 
+// A silent localhost fallback in production would ship canonical/OG/JSON-LD URLs pointing at
+// http://localhost:3000 to real crawlers — fail loudly at boot instead. Dev and `npm test` never
+// set NODE_ENV=production, so the fallback still holds there (and in the Docker image, which
+// always sets SITE_URL — see .env.example / Dockerfile). `next build` itself also runs with
+// NODE_ENV=production (setting NEXT_PHASE=phase-production-build) with no need for SITE_URL to
+// be set yet — this must only fire once the built app actually starts serving traffic.
+if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE !== 'phase-production-build' && !process.env.SITE_URL) {
+  throw new Error('SITE_URL must be set in production — it feeds every canonical/OG/JSON-LD URL the site emits.')
+}
+
 export const SITE_CONFIG: SiteConfig = {
   name: 'Egyphoria',
   baseUrl: process.env.SITE_URL ?? 'http://localhost:3000',
   locales: LOCALES,
   defaultLocale: 'en',
   brandSuffix: ' | Egyphoria',
+  logoPath: '/assets/apple-touch-icon.png', // TODO(omar): swap for a dedicated schema.org logo asset if the brand ever ships one
   contact: {
     email: 'hello@egyphoria.com', // TODO(omar): confirm the real contact email (carried over as a placeholder from the old build.mjs config)
     phone: '', // TODO(omar): the old static site never published a phone number — add one or leave blank
     whatsapp: '',
     addressLines: ['Egypt'], // TODO(omar): add a real office address for /contact and Organization schema
+    sameAs: [], // TODO(omar): add real social profile URLs once they exist
   },
   popularSearches: Object.fromEntries(LOCALES.map((lang) => [lang, popularSearchesFor(lang)])),
 }

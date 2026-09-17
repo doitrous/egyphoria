@@ -1,12 +1,14 @@
 // Server-side UI-string lookup — the same `S(path, vars)` / `{n}` interpolation the old static
 // build's src/client/data.js used, ported to read content/i18n/<lang>.json at render time
 // instead of a client-side <script id="egy-data"> blob, since every page here is server-rendered.
-import en from '@/content/i18n/en.json'
-import nl from '@/content/i18n/nl.json'
-import fr from '@/content/i18n/fr.json'
-import el from '@/content/i18n/el.json'
-import tr from '@/content/i18n/tr.json'
-import es from '@/content/i18n/es.json'
+// Relative, not the `@/` alias: node's own ESM loader (used by `npm test`) doesn't understand
+// it, only Next's bundler does — same reasoning as lib/trips.ts and lib/journal.ts.
+import en from '../content/i18n/en.json' with { type: 'json' }
+import nl from '../content/i18n/nl.json' with { type: 'json' }
+import fr from '../content/i18n/fr.json' with { type: 'json' }
+import el from '../content/i18n/el.json' with { type: 'json' }
+import tr from '../content/i18n/tr.json' with { type: 'json' }
+import es from '../content/i18n/es.json' with { type: 'json' }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Dict = any

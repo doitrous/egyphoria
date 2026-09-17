@@ -13,33 +13,11 @@ import { legacyRedirectTarget } from './lib/legacy-redirects'
 
 const seoRedirects = withSeoRedirects(store)
 
-const LOCALE_COOKIE = 'site_locale'
 const INDEXNOW_KEY_FILE = /^\/[^/]+\.txt$/
 // Reserved surfaces that are never locale-prefixed and never redirect-checked past this point.
 const PASSTHROUGH = /^\/(api|admin|seo-admin|authors|help|tools|editorial-guidelines|_next|favicon\.ico|robots\.txt|sitemap\.xml)/
 // Anything under /public (images, fonts, etc.) is a file, not a page — never locale-redirect it.
 const PUBLIC_FILE = /\.(?:jpg|jpeg|png|webp|avif|gif|svg|ico|mp4|webm|txt|xml|json|woff2?)$/i
-
-function detectLocale(request: NextRequest): string {
-  const cookie = request.cookies.get(LOCALE_COOKIE)?.value
-  if (cookie && SITE_CONFIG.locales.includes(cookie)) return cookie
-
-  const header = request.headers.get('accept-language')
-  if (header) {
-    const ranked = header
-      .split(',')
-      .map((part) => {
-        const [tag, q] = part.trim().split(';q=')
-        return { tag: tag.toLowerCase(), q: q ? Number(q) : 1 }
-      })
-      .sort((a, b) => b.q - a.q)
-    for (const { tag } of ranked) {
-      const base = tag.split('-')[0]
-      if (SITE_CONFIG.locales.includes(base)) return base
-    }
-  }
-  return SITE_CONFIG.defaultLocale
-}
 
 export async function proxy(request: NextRequest) {
   // The hub's redirect table, checked first per packages/CONTRACT.md ("Redirects are applied
@@ -87,10 +65,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next({ request: { headers } })
   }
 
-  const locale = detectLocale(request)
+  // Every legitimate old URL is already handled by legacyRedirectTarget above (its own unit test
+  // replays the entire old sitemap through it). Anything else that reaches here with no locale
+  // prefix — /xx/trips/giza-day, /nonexistent, a typo — is not a page this site has ever served,
+  // so this must never *redirect* to a nested, still-nonexistent path (that 307s to a 404: two
+  // round-trips for what should be one, and implies a page exists where none does). A rewrite
+  // instead: Next's own router decides, in one hop, that /{defaultLocale}{pathname} doesn't
+  // match any route and 404s — the client sees the 404 directly, no redirect chain.
+  // pathname is never '/' here — legacyRedirectTarget already 301s that to /en, above.
   const url = request.nextUrl.clone()
-  url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`
-  return NextResponse.redirect(url)
+  url.pathname = `/${SITE_CONFIG.defaultLocale}${pathname}`
+  return NextResponse.rewrite(url)
 }
 
 export const config = { matcher: ['/((?!_next/static|_next/image).*)'] }

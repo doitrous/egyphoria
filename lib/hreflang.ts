@@ -21,3 +21,14 @@ export function localAlternates(pathWithoutLang: string): Record<string, string>
   entries['x-default'] = `${base}/${SITE_CONFIG.defaultLocale}${pathWithoutLang}`
   return entries
 }
+
+/**
+ * `composeSeo`'s `canonical` (core-js `resolve.ts`) is only absolute once the hub has synced
+ * `settings.baseUrls` for this lang — on a cold store, or before that sync, it falls back to the
+ * bare path (e.g. `/en`). Every caller (page JSON-LD `url`/`item` fields, `<ShareBlock>`,
+ * `<link rel="canonical">`) needs one absolute value regardless, so this is the one place that
+ * guarantees it — see lib/seo.ts's wrapped `resolve` and lib/page-metadata.ts.
+ */
+export function toAbsolute(pathOrUrl: string): string {
+  return new URL(pathOrUrl, SITE_CONFIG.baseUrl).href.replace(/\/$/, '')
+}

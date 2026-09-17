@@ -1,9 +1,12 @@
-import { pageMetadata } from '@/lib/page-metadata'
+import { pageMetadata, NOINDEX_PATHS } from '@/lib/page-metadata'
 import { SITE_CONFIG } from '@/site.config'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
-  return pageMetadata('/privacy', lang)
+  const base = await pageMetadata('/privacy', lang)
+  // Ticket: /{lang}/privacy is noindex, same as /terms — NOINDEX_PATHS is the one list both
+  // pages check, so they can't drift apart (test/local-content.test.ts asserts its membership).
+  return NOINDEX_PATHS.has('/privacy') ? { ...base, robots: { index: false, follow: true } } : base
 }
 
 // The old static build never had a /privacy page at all — this is new, required by

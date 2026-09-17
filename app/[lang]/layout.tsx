@@ -24,8 +24,23 @@ export default async function LangLayout({
   // Set by proxy.ts. Resolving SEO once here lets a single <SeoJsonLd>/<SeoGtag> pair cover
   // every page under [lang] without each one re-fetching it.
   const pathname = (await headers()).get('x-site-pathname') ?? `/${lang}`
-  const resolved = await seo.resolve(pathname.split('?')[0], lang)
+  const rawResolved = await seo.resolve(pathname.split('?')[0], lang)
   const pathWithoutLang = pathname.startsWith(`/${lang}`) ? pathname.slice(lang.length + 1) || '' : ''
+
+  // 01-site-setup.md: every page needs Organization/TravelAgency schema. The hub's own
+  // settings.entity (once configured) already lands in resolved.jsonld; this is the local
+  // fallback so every [lang] page carries it before that hub profile exists — one place, rather
+  // than a per-page check like the one this replaced on /contact.
+  const hasHubEntity = rawResolved.jsonld.some((e) => {
+    const type = (e as { '@type'?: string })['@type']
+    return type === 'TravelAgency' || type === 'Organization'
+  })
+  const localEntity = {
+    '@context': 'https://schema.org', '@type': 'TravelAgency', name: SITE_CONFIG.name,
+    url: SITE_CONFIG.baseUrl, logo: `${SITE_CONFIG.baseUrl}${SITE_CONFIG.logoPath}`,
+    sameAs: SITE_CONFIG.contact.sameAs,
+  }
+  const resolved = hasHubEntity ? rawResolved : { ...rawResolved, jsonld: [...rawResolved.jsonld, localEntity] }
 
   const searches = SITE_CONFIG.popularSearches[lang]?.length ? SITE_CONFIG.popularSearches[lang] : SITE_CONFIG.popularSearches[SITE_CONFIG.defaultLocale]
 
