@@ -1,0 +1,212 @@
+{
+  "en": {
+    "kind": "cost-estimator",
+    "config": {
+      "title": "Egypt Trip Cost Estimator",
+      "currency": "USD",
+      "inputs": [
+        { "key": "nights", "label": "Nights", "type": "number", "default": 5, "min": 1, "max": 30 },
+        { "key": "travelers", "label": "Travelers", "type": "number", "default": 2, "min": 1, "max": 10 },
+        {
+          "key": "hotelTier", "label": "Hotel tier", "type": "select", "default": "mid",
+          "options": [
+            { "value": "budget", "label": "Budget" },
+            { "value": "mid", "label": "Mid-range" },
+            { "value": "luxury", "label": "Luxury" }
+          ]
+        },
+        { "key": "includeFlights", "label": "Include domestic flights (Cairo–Luxor–Aswan)", "type": "toggle", "default": false }
+      ],
+      "rates": {
+        "nights": 45,
+        "travelers": 20,
+        "hotelTier:budget": 0,
+        "hotelTier:mid": 35,
+        "hotelTier:luxury": 120,
+        "includeFlights": 90
+      }
+    },
+    "methodologyHtml": "<p>Estimate = (nights &times; base rate) + (travelers &times; per-person guiding/transport) + a hotel-tier night surcharge + optional domestic flights. These are placeholder rates from a starter rate card, modelled on typical shoulder-season pricing for a small private journey &mdash; swap in Egyphoria's real contracted pricing before treating this as a quote.</p>",
+    "dataSource": "Egyphoria placeholder rate card",
+    "asOf": "2026-09-01",
+    "faq": [
+      { "q": "Does this include international flights to Egypt?", "a": "No — only the optional domestic Cairo–Luxor–Aswan leg. International flights to and from Egypt are priced and booked separately." },
+      { "q": "Are these Egyphoria's real prices?", "a": "No. These are placeholder rates flagged \"as of 2026-09\" — treat this as a starting estimate, not a quote. Reach out and we'll put together your real price." }
+    ]
+  },
+  "nl": {
+    "kind": "cost-estimator",
+    "config": {
+      "title": "Kostencalculator Egypte-reis",
+      "currency": "USD",
+      "inputs": [
+        { "key": "nights", "label": "Nachten", "type": "number", "default": 5, "min": 1, "max": 30 },
+        { "key": "travelers", "label": "Reizigers", "type": "number", "default": 2, "min": 1, "max": 10 },
+        {
+          "key": "hotelTier", "label": "Hotelcategorie", "type": "select", "default": "mid",
+          "options": [
+            { "value": "budget", "label": "Budget" },
+            { "value": "mid", "label": "Middenklasse" },
+            { "value": "luxury", "label": "Luxe" }
+          ]
+        },
+        { "key": "includeFlights", "label": "Inclusief binnenlandse vluchten (Caïro–Luxor–Aswan)", "type": "toggle", "default": false }
+      ],
+      "rates": {
+        "nights": 45,
+        "travelers": 20,
+        "hotelTier:budget": 0,
+        "hotelTier:mid": 35,
+        "hotelTier:luxury": 120,
+        "includeFlights": 90
+      }
+    },
+    "methodologyHtml": "<p>Schatting = (nachten &times; basistarief) + (reizigers &times; gids/vervoer per persoon) + een toeslag per hotelcategorie + optionele binnenlandse vluchten. Dit zijn indicatieve tarieven, gebaseerd op typische prijzen in het tussenseizoen voor een kleine privéreis.</p>",
+    "dataSource": "Egyphoria indicatieve tarieven",
+    "asOf": "2026-09-01",
+    "faq": [
+      { "q": "Zijn internationale vluchten naar Egypte hierbij inbegrepen?", "a": "Nee — alleen de optionele binnenlandse vlucht Caïro–Luxor–Aswan. Internationale vluchten worden apart geprijsd en geboekt." },
+      { "q": "Zijn dit de echte prijzen van Egyphoria?", "a": "Nee. Dit zijn indicatieve tarieven \"per 2026-09\" — zie dit als een eerste schatting, geen offerte. Neem contact op voor uw echte prijs." }
+    ]
+  },
+  "fr": {
+    "kind": "cost-estimator",
+    "config": {
+      "title": "Estimateur de coût d'un voyage en Égypte",
+      "currency": "USD",
+      "inputs": [
+        { "key": "nights", "label": "Nuits", "type": "number", "default": 5, "min": 1, "max": 30 },
+        { "key": "travelers", "label": "Voyageurs", "type": "number", "default": 2, "min": 1, "max": 10 },
+        {
+          "key": "hotelTier", "label": "Catégorie d'hôtel", "type": "select", "default": "mid",
+          "options": [
+            { "value": "budget", "label": "Économique" },
+            { "value": "mid", "label": "Milieu de gamme" },
+            { "value": "luxury", "label": "Luxe" }
+          ]
+        },
+        { "key": "includeFlights", "label": "Inclure les vols intérieurs (Le Caire–Louxor–Assouan)", "type": "toggle", "default": false }
+      ],
+      "rates": {
+        "nights": 45,
+        "travelers": 20,
+        "hotelTier:budget": 0,
+        "hotelTier:mid": 35,
+        "hotelTier:luxury": 120,
+        "includeFlights": 90
+      }
+    },
+    "methodologyHtml": "<p>Estimation = (nuits &times; tarif de base) + (voyageurs &times; guide/transport par personne) + un supplément selon la catégorie d'hôtel + vols intérieurs en option. Tarifs indicatifs, basés sur une saison intermédiaire pour un petit voyage privé.</p>",
+    "dataSource": "Grille tarifaire indicative Egyphoria",
+    "asOf": "2026-09-01",
+    "faq": [
+      { "q": "Les vols internationaux vers l'Égypte sont-ils inclus ?", "a": "Non — seulement le vol intérieur optionnel Le Caire–Louxor–Assouan. Les vols internationaux sont réservés et facturés séparément." },
+      { "q": "Sont-ce les vrais tarifs d'Egyphoria ?", "a": "Non. Ce sont des tarifs indicatifs « au 2026-09 » — considérez ceci comme une première estimation, pas un devis. Contactez-nous pour votre tarif réel." }
+    ]
+  },
+  "el": {
+    "kind": "cost-estimator",
+    "config": {
+      "title": "Εκτιμητής κόστους ταξιδιού στην Αίγυπτο",
+      "currency": "USD",
+      "inputs": [
+        { "key": "nights", "label": "Διανυκτερεύσεις", "type": "number", "default": 5, "min": 1, "max": 30 },
+        { "key": "travelers", "label": "Ταξιδιώτες", "type": "number", "default": 2, "min": 1, "max": 10 },
+        {
+          "key": "hotelTier", "label": "Κατηγορία ξενοδοχείου", "type": "select", "default": "mid",
+          "options": [
+            { "value": "budget", "label": "Οικονομικό" },
+            { "value": "mid", "label": "Μεσαίας κατηγορίας" },
+            { "value": "luxury", "label": "Πολυτελές" }
+          ]
+        },
+        { "key": "includeFlights", "label": "Συμπερίληψη εσωτερικών πτήσεων (Κάιρο–Λούξορ–Ασουάν)", "type": "toggle", "default": false }
+      ],
+      "rates": {
+        "nights": 45,
+        "travelers": 20,
+        "hotelTier:budget": 0,
+        "hotelTier:mid": 35,
+        "hotelTier:luxury": 120,
+        "includeFlights": 90
+      }
+    },
+    "methodologyHtml": "<p>Εκτίμηση = (διανυκτερεύσεις &times; βασική τιμή) + (ταξιδιώτες &times; κόστος ξεναγήσεων/μεταφορών ανά άτομο) + επιβάρυνση βάσει κατηγορίας ξενοδοχείου + προαιρετικές εσωτερικές πτήσεις. Ενδεικτικές τιμές, βασισμένες σε τυπική τιμολόγηση περιόδου χαμηλής ζήτησης για ένα μικρό ιδιωτικό ταξίδι.</p>",
+    "dataSource": "Ενδεικτικός τιμοκατάλογος Egyphoria",
+    "asOf": "2026-09-01",
+    "faq": [
+      { "q": "Περιλαμβάνονται οι διεθνείς πτήσεις προς την Αίγυπτο;", "a": "Όχι — μόνο η προαιρετική εσωτερική πτήση Κάιρο–Λούξορ–Ασουάν. Οι διεθνείς πτήσεις τιμολογούνται και κρατούνται ξεχωριστά." },
+      { "q": "Είναι αυτές οι πραγματικές τιμές της Egyphoria;", "a": "Όχι. Πρόκειται για ενδεικτικές τιμές «από 2026-09» — θεωρήστε το μια αρχική εκτίμηση, όχι προσφορά. Επικοινωνήστε μαζί μας για την πραγματική σας τιμή." }
+    ]
+  },
+  "tr": {
+    "kind": "cost-estimator",
+    "config": {
+      "title": "Mısır Gezisi Maliyet Tahmini",
+      "currency": "USD",
+      "inputs": [
+        { "key": "nights", "label": "Gece sayısı", "type": "number", "default": 5, "min": 1, "max": 30 },
+        { "key": "travelers", "label": "Gezgin sayısı", "type": "number", "default": 2, "min": 1, "max": 10 },
+        {
+          "key": "hotelTier", "label": "Otel kategorisi", "type": "select", "default": "mid",
+          "options": [
+            { "value": "budget", "label": "Ekonomik" },
+            { "value": "mid", "label": "Orta segment" },
+            { "value": "luxury", "label": "Lüks" }
+          ]
+        },
+        { "key": "includeFlights", "label": "İç hat uçuşlarını dahil et (Kahire–Luksor–Asvan)", "type": "toggle", "default": false }
+      ],
+      "rates": {
+        "nights": 45,
+        "travelers": 20,
+        "hotelTier:budget": 0,
+        "hotelTier:mid": 35,
+        "hotelTier:luxury": 120,
+        "includeFlights": 90
+      }
+    },
+    "methodologyHtml": "<p>Tahmin = (gece sayısı &times; taban ücret) + (gezgin sayısı &times; kişi başı rehberlik/ulaşım) + otel kategorisi ek ücreti + isteğe bağlı iç hat uçuşları. Bunlar, küçük bir özel gezi için tipik ara sezon fiyatlandırmasına dayanan gösterge niteliğinde ücretlerdir.</p>",
+    "dataSource": "Egyphoria gösterge fiyat listesi",
+    "asOf": "2026-09-01",
+    "faq": [
+      { "q": "Mısır'a uluslararası uçuşlar buna dahil mi?", "a": "Hayır — sadece isteğe bağlı Kahire–Luksor–Asvan iç hat uçuşu. Uluslararası uçuşlar ayrıca fiyatlandırılır ve ayrıca rezerve edilir." },
+      { "q": "Bunlar Egyphoria'nın gerçek fiyatları mı?", "a": "Hayır. Bunlar \"2026-09 itibarıyla\" işaretli gösterge ücretlerdir — bunu bir teklif değil, başlangıç tahmini olarak değerlendirin. Gerçek fiyatınız için bizimle iletişime geçin." }
+    ]
+  },
+  "es": {
+    "kind": "cost-estimator",
+    "config": {
+      "title": "Estimador de coste de un viaje a Egipto",
+      "currency": "USD",
+      "inputs": [
+        { "key": "nights", "label": "Noches", "type": "number", "default": 5, "min": 1, "max": 30 },
+        { "key": "travelers", "label": "Viajeros", "type": "number", "default": 2, "min": 1, "max": 10 },
+        {
+          "key": "hotelTier", "label": "Categoría de hotel", "type": "select", "default": "mid",
+          "options": [
+            { "value": "budget", "label": "Económica" },
+            { "value": "mid", "label": "Media" },
+            { "value": "luxury", "label": "Lujo" }
+          ]
+        },
+        { "key": "includeFlights", "label": "Incluir vuelos domésticos (El Cairo–Luxor–Asuán)", "type": "toggle", "default": false }
+      ],
+      "rates": {
+        "nights": 45,
+        "travelers": 20,
+        "hotelTier:budget": 0,
+        "hotelTier:mid": 35,
+        "hotelTier:luxury": 120,
+        "includeFlights": 90
+      }
+    },
+    "methodologyHtml": "<p>Estimación = (noches &times; tarifa base) + (viajeros &times; guía/transporte por persona) + un recargo según la categoría de hotel + vuelos domésticos opcionales. Tarifas orientativas, basadas en precios típicos de temporada media para un viaje privado pequeño.</p>",
+    "dataSource": "Tarifario orientativo de Egyphoria",
+    "asOf": "2026-09-01",
+    "faq": [
+      { "q": "¿Incluye los vuelos internacionales a Egipto?", "a": "No — solo el vuelo doméstico opcional El Cairo–Luxor–Asuán. Los vuelos internacionales se cotizan y reservan por separado." },
+      { "q": "¿Son estos los precios reales de Egyphoria?", "a": "No. Son tarifas orientativas marcadas «a fecha de 2026-09» — trátelo como una estimación inicial, no una cotización. Contáctenos para su precio real." }
+    ]
+  }
+}

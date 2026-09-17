@@ -1,0 +1,284 @@
+{
+  "destinations": {
+    "cairo": {
+      "name": "Cairo & Giza",
+      "activities": [
+        [
+          "history",
+          "Explore the Giza pyramids and the Great Sphinx"
+        ],
+        [
+          "history",
+          "Discover ancient treasures at the Grand Egyptian Museum"
+        ],
+        [
+          "culture",
+          "Wander Khan el-Khalili and pause for Egyptian coffee"
+        ],
+        [
+          "culture",
+          "Explore Coptic Cairo and its historic lanes"
+        ],
+        [
+          "history",
+          "Visit the Step Pyramid at Saqqara"
+        ],
+        [
+          "culture",
+          "Taste Egyptian classics on a relaxed local food walk"
+        ],
+        [
+          "relax",
+          "Enjoy an unhurried evening beside the Nile"
+        ],
+        [
+          "nature",
+          "Stroll through Al-Azhar Park"
+        ]
+      ]
+    },
+    "luxor": {
+      "name": "Luxor",
+      "activities": [
+        [
+          "history",
+          "Explore the vast columns and courtyards of Karnak"
+        ],
+        [
+          "history",
+          "Discover the Valley of the Kings on the west bank"
+        ],
+        [
+          "history",
+          "Visit the Temple of Hatshepsut"
+        ],
+        [
+          "culture",
+          "Experience Luxor Temple as the afternoon light softens"
+        ],
+        [
+          "nature",
+          "Walk along the Nile with views of the west bank"
+        ],
+        [
+          "relax",
+          "Leave an afternoon free for the pool or the riverside"
+        ],
+        [
+          "culture",
+          "Browse a local market and enjoy a leisurely Egyptian dinner"
+        ]
+      ]
+    },
+    "aswan": {
+      "name": "Aswan",
+      "activities": [
+        [
+          "history",
+          "Visit the island sanctuary of Philae Temple"
+        ],
+        [
+          "nature",
+          "Take a felucca sail on the Nile, weather permitting"
+        ],
+        [
+          "culture",
+          "Discover Nubian culture with a locally guided village visit"
+        ],
+        [
+          "relax",
+          "Enjoy a slow afternoon beside the Nile"
+        ],
+        [
+          "history",
+          "Set aside a full day for an early road excursion to Abu Simbel"
+        ],
+        [
+          "culture",
+          "Explore Aswan’s souk at your own pace"
+        ],
+        [
+          "nature",
+          "Visit the gardens of Kitchener’s Island"
+        ]
+      ]
+    },
+    "redsea": {
+      "name": "Red Sea",
+      "activities": [
+        [
+          "relax",
+          "Settle into a leisurely beach day in Hurghada"
+        ],
+        [
+          "nature",
+          "Join a guided Red Sea snorkeling excursion, conditions permitting"
+        ],
+        [
+          "relax",
+          "Enjoy a free day at your resort"
+        ],
+        [
+          "culture",
+          "Explore Hurghada’s marina and find a spot for dinner"
+        ],
+        [
+          "nature",
+          "Discover the coast on a boat excursion, conditions permitting"
+        ],
+        [
+          "relax",
+          "Make time for a spa visit or a quiet afternoon by the water"
+        ]
+      ]
+    },
+    "desert": {
+      "name": "White Desert",
+      "activities": [
+        [
+          "nature",
+          "Travel with a licensed desert operator to the White Desert’s chalk formations"
+        ],
+        [
+          "nature",
+          "Explore the Black Desert and Crystal Mountain with a local guide"
+        ],
+        [
+          "relax",
+          "Watch the light change across the desert at sunset"
+        ],
+        [
+          "nature",
+          "Spend an evening stargazing at a permitted camp"
+        ],
+        [
+          "culture",
+          "Pause in Bahariya Oasis and learn about oasis life"
+        ]
+      ]
+    },
+    "alexandria": {
+      "name": "Alexandria",
+      "activities": [
+        [
+          "history",
+          "Explore the Catacombs of Kom el Shoqafa"
+        ],
+        [
+          "history",
+          "Visit the seafront Citadel of Qaitbay"
+        ],
+        [
+          "culture",
+          "Discover the Bibliotheca Alexandrina, subject to opening hours"
+        ],
+        [
+          "relax",
+          "Stroll the Corniche and linger over a seaside lunch"
+        ],
+        [
+          "culture",
+          "Explore Alexandria’s cafés and Mediterranean character"
+        ]
+      ]
+    }
+  },
+  "trips": {
+    "egypt-unfolded": {
+      "name": "Egypt, unfolded",
+      "tag": "THE SIGNATURE JOURNEY",
+      "description": "The icons you dream of. The moments you don’t expect.",
+      "detail": "From the pyramids to the temples of Upper Egypt, follow a thoughtfully paced route through Egypt’s most enduring wonders. Leave room for a market detour, a quiet courtyard and the soft light on the Nile.",
+      "location": "CAIRO · LUXOR · ASWAN",
+      "highlights": [
+        "Days 1–3|Cairo, Giza, ancient treasures and local life",
+        "Days 4–5|Travel to Luxor; discover its east and west banks",
+        "Days 6–7|Travel to Aswan; Philae and a gentler rhythm on the Nile"
+      ]
+    },
+    "nile": {
+      "name": "Along the timeless Nile",
+      "tag": "SLOW TRAVEL",
+      "description": "Temple mornings. Felucca afternoons. No need to rush.",
+      "detail": "A land-based journey between Luxor and Aswan, with temple visits and time by the river. Add a felucca sail and discover the cultures that give the Nile its character.",
+      "location": "LUXOR · ASWAN",
+      "highlights": [
+        "Days 1–2|Luxor’s temples and the west bank",
+        "Day 3|Travel south to Aswan and settle in",
+        "Days 4–5|Philae Temple, Nubian culture and a felucca sail"
+      ]
+    },
+    "desert": {
+      "name": "Where the world falls quiet",
+      "tag": "OFF THE BEATEN PATH",
+      "description": "Otherworldly landscapes. A sky full of possibility.",
+      "detail": "Leave Cairo for Bahariya Oasis and an expedition among the White Desert’s chalk formations. Designed with a licensed local desert operator, with camping and access subject to permits and conditions.",
+      "location": "BAHARIYA · WHITE DESERT",
+      "highlights": [
+        "Day 1|Transfer from Cairo to Bahariya Oasis",
+        "Day 2|Guided desert exploration, sunset and permitted camping",
+        "Day 3|A slow morning and return transfer to Cairo"
+      ]
+    },
+    "red-sea": {
+      "name": "A different shade of blue",
+      "tag": "COASTAL ESCAPE",
+      "description": "Clear water, sun-warmed days, and room to exhale.",
+      "detail": "A gentle coastal escape based in Hurghada. Choose relaxed beach days, guided snorkeling or a little of both. Boat trips and water activities depend on conditions and local availability.",
+      "location": "HURGHADA · RED SEA",
+      "highlights": [
+        "Day 1|Arrive and settle into life by the water",
+        "Days 2–4|Beach time, optional snorkeling and a marina evening",
+        "Day 5|One last slow morning before departure"
+      ]
+    },
+    "giza-day": {
+      "name": "An audience with eternity",
+      "tag": "AN EGYPTIAN ESSENTIAL",
+      "description": "Meet the pyramids. See history on a different scale.",
+      "detail": "A focused day on the Giza Plateau, with time for the pyramids, the Sphinx and a relaxed Egyptian lunch. An ideal starting point for a first visit to Cairo.",
+      "location": "GIZA · CAIRO",
+      "highlights": [
+        "Morning|The pyramids of Giza and panoramic viewpoints",
+        "Midday|The Great Sphinx and time for lunch",
+        "Afternoon|Return to your Cairo base"
+      ]
+    },
+    "cairo-day": {
+      "name": "The soul of old Cairo",
+      "tag": "CULTURE & CONNECTION",
+      "description": "Winding lanes, glowing lanterns, stories at every turn.",
+      "detail": "Discover Cairo through its everyday textures. Explore historic lanes, browse Khan el-Khalili and pause for coffee and Egyptian flavors along the way.",
+      "location": "HISTORIC CAIRO",
+      "highlights": [
+        "Morning|A walk through historic Cairo and Al-Muizz Street",
+        "Afternoon|Khan el-Khalili and a local lunch",
+        "Late afternoon|An unhurried coffee stop before returning"
+      ]
+    },
+    "luxor-day": {
+      "name": "A day among the pharaohs",
+      "tag": "ANCIENT WONDERS",
+      "description": "Tombs, temples, and a thousand reasons to look up.",
+      "detail": "A full day based in Luxor, linking selected west-bank highlights with Karnak on the east bank. Start early, allow time for lunch and choose fewer stops if you prefer a slower pace.",
+      "location": "LUXOR · EAST & WEST BANKS",
+      "highlights": [
+        "Early morning|Valley of the Kings",
+        "Late morning|Temple of Hatshepsut and lunch",
+        "Afternoon|Karnak Temple before returning to your Luxor base"
+      ]
+    },
+    "alex-day": {
+      "name": "Alexandria, a sea change",
+      "tag": "BEYOND CAIRO",
+      "description": "Mediterranean air and another side of Egypt.",
+      "detail": "A long day trip from Cairo to Egypt’s Mediterranean city. Begin early for the road journey, explore the catacombs and Qaitbay’s waterfront, and leave time for a seaside lunch before the return drive.",
+      "location": "CAIRO → ALEXANDRIA",
+      "highlights": [
+        "Early morning|Road transfer from Cairo to Alexandria",
+        "Daytime|Catacombs, the Qaitbay waterfront and seaside lunch",
+        "Evening|Return drive to Cairo"
+      ]
+    }
+  }
+}
