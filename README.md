@@ -60,6 +60,31 @@ original six raw keys (`lib/trips.ts`'s `getRawDestinations`) since splitting fo
 reason to fragment the trip planner's own activity pool. `test/trips.test.ts` verifies the split
 loses and duplicates nothing.
 
+## Homepage
+
+`app/[lang]/page.tsx` (V2-PHASE-9b, "The Continental Timetable") is a European-departure-board
+take on the homepage rather than a full-bleed pyramid hero: blue header band, H1 + standfirst +
+yellow "Build my itinerary" CTA, then a real `<table>` departures board of all 8 trips
+(`components/DeparturesBoard.tsx`; place/days/from/best-months/→, whole row clickable via a
+stretched-link `::after`, rows settle in on load — `board-settle` in `app/globals.css`, skipped
+under `prefers-reduced-motion`), a full-bleed Giza station photo, a 7-day timetable strip
+(`components/WeekStrip.tsx`) explaining how a week lays out, a 7-destination table
+(`components/DestinationsTable.tsx`), the restyled itinerary builder (`TripBuilderForm.tsx`) in a
+blue strip, a founders section reusing the existing `behind.*` copy, a reviews section, and a
+"Before you go" notices board linking every help entry, the two journal posts, and the trip-cost
+tool.
+
+- The founders photo is conditional on `content/founders.json`'s `photo` field (`null` today — no
+  real photo asset exists yet; add one and set the path to show it).
+- The reviews section (`content/reviews.json`) renders nothing while that file is `[]` — add real
+  review objects to bring it back; no placeholder reviews were invented.
+- All new UI strings live under the `home.*` key in `content/i18n/<lang>.json`.
+  `lib/home-content.ts` is a plain-data mirror of the page's rendered text, used only by
+  `test/home.test.ts`'s word-count check — node's native test runner can't load JSX, so it can't
+  render the real component; keep the two in sync if either changes.
+- Adds an `ItemList` of `TouristTrip`/`Offer` JSON-LD (all 8 trips) alongside the existing
+  `TravelAgency` entity JSON-LD `[lang]/layout.tsx` already emits.
+
 ## Testing
 
 - `npm test` — `node --test` (native runner, TypeScript stripped, no framework). Covers hreflang
@@ -134,3 +159,11 @@ variable is read at request time.
   trips ~147–168 words against a 500-word Tour floor) — this reuses only the old site's real copy,
   with nothing invented to pad it out; expanding it with genuine content is follow-up work for a
   human writer.
+- The V2-PHASE-9b ticket asks for a `greek` font subset (for `el`) on both `Archivo Narrow` and
+  `Archivo`. Neither typeface ships one on Google Fonts — `next/font/google`'s own generated type
+  only allows `'latin' | 'latin-ext' | 'vietnamese'` for these two families, and requesting
+  `'greek'` fails the build. `el` pages fall back through the CSS font stack to the platform's
+  default sans/serif for Greek text (not broken, just not these two typefaces' own letterforms) —
+  flagging as a ticket/reality mismatch rather than a bug.
+- `content/founders.json` (`photo: null`) and `content/reviews.json` (`[]`) are both intentionally
+  empty placeholders — see "Homepage" above.
