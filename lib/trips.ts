@@ -203,19 +203,37 @@ export const DESTINATION_SUGGESTED_DAYS: Record<string, number | [number, number
   cairo: 2, giza: 1, luxor: [2, 3], alexandria: 1, nile: [2, 3], desert: [2, 3], 'red-sea': 3,
 }
 
+export type BuilderEstimate = { kind: 'covered'; amount: number; tripId: string } | { kind: 'none' }
+
 /**
- * A lower-bound "from" per-person total for the itinerary builder's running-total row: for each
- * raw destination the visitor has checked, the cheapest real trip (TRIP_PRICES) that actually
- * visits it (TRIP_META.places). Sums those minimums — a real, sourced floor, not an invented
- * number — same principle as the departures board's own prices.
+ * Fix round 1, blocker #3: the old version summed the cheapest trip touching EACH selected
+ * destination independently, which double-discounts a multi-destination selection — the default
+ * Cairo/Luxor/Aswan selection summed to $1,255, below "Egypt, unfolded" ($1,450), the only real
+ * trip that actually covers all three. A running total must never quote a figure cheaper than
+ * any bookable trip, so this only ever names the cheapest real trip whose own `places` are a
+ * superset of the whole selection. No covering trip → no number, `kind: 'none'` (the caller
+ * shows a "we quote this by hand" line instead of inventing one).
  */
-export function estimateFromTotal(rawDestinationIds: string[]): number {
-  let total = 0
-  for (const rid of rawDestinationIds) {
-    const prices = TRIP_IDS
-      .filter((id) => TRIP_META[id].places.includes(rid))
-      .map((id) => TRIP_PRICES[id].amount)
-    if (prices.length) total += Math.min(...prices)
+export function estimateFromTotal(rawDestinationIds: string[]): BuilderEstimate {
+  if (rawDestinationIds.length === 0) return { kind: 'none' }
+  const covering = TRIP_IDS.filter((id) => rawDestinationIds.every((rid) => TRIP_META[id].places.includes(rid)))
+  if (covering.length === 0) return { kind: 'none' }
+  const tripId = covering.reduce((best, id) => (TRIP_PRICES[id].amount < TRIP_PRICES[best].amount ? id : best))
+  return { kind: 'covered', amount: TRIP_PRICES[tripId].amount, tripId }
+}
+
+/** Builds the homepage's ItemList of TouristTrip/Offer JSON-LD — the actual function
+ * app/[lang]/page.tsx calls, so test/home.test.ts exercises the real code path instead of a
+ * parallel re-derivation of the same shape (fix round 1, item #17). */
+export function buildTripItemList(lang: string, origin: string, itemListName: string) {
+  return {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: itemListName,
+    itemListElement: listTrips(lang).map((trip, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      item: {
+        '@type': 'TouristTrip', name: trip.name, url: `${origin}/${lang}/trips/${trip.id}`,
+        offers: { '@type': 'Offer', price: TRIP_PRICES[trip.id]?.amount, priceCurrency: CURRENCY },
+      },
+    })),
   }
-  return total
 }

@@ -11,6 +11,19 @@ import {
 import { LOCAL_JOURNAL_SLUGS, getLocalArticle } from './journal.ts'
 import { LOCAL_HELP_SLUGS, loadLocalHelpEntry } from './help.ts'
 import tripCost from '../content/tools/trip-cost.json' with { type: 'json' }
+import reviewsJson from '../content/reviews.json' with { type: 'json' }
+
+/** content/reviews.json's shape — real fields only, no ratings/stars invented. `trip`/`date`
+ * are optional; when present they're appended after the reviewer's name. See README's
+ * "Homepage" TODO(omar) for the sign-off this still needs before real reviews are added. */
+export type Review = { quote: string; name: string; trip?: string; date?: string }
+
+/** Formats each review into the "Before you go" notices-board `<li>` shape (a quote plus a
+ * small name/trip/date label) — the actual function app/[lang]/page.tsx calls to render the
+ * reviews section, so tests exercise the real code path instead of a re-derived shape. */
+export function reviewRows(reviews: Review[]): { quote: string; label: string }[] {
+  return reviews.map((r) => ({ quote: r.quote, label: [r.name, r.trip, r.date].filter(Boolean).join(' — ') }))
+}
 
 const STATIC_KEYS = [
   'home.title', 'home.standfirst', 'home.ctaPrimary', 'home.boardCaption',
@@ -37,6 +50,7 @@ export function homeMainStrings(lang: string): string[] {
 
   const trips = listTrips(lang)
   for (const trip of trips) {
+    strings.push(trip.location)
     strings.push(trip.name)
     strings.push(`${trip.days} ${trip.days === 1 ? t(lang, 'journeys.day') : t(lang, 'journeys.days')}`)
     strings.push(formatPriceLabel(trip.id, t(lang, 'journeys.from')))
@@ -70,6 +84,11 @@ export function homeMainStrings(lang: string): string[] {
   }
   const files = tripCost as Record<string, { config: { title: string } }>
   strings.push(files[lang]?.config.title ?? files.en.config.title)
+
+  for (const r of reviewRows(reviewsJson as Review[])) {
+    strings.push(r.quote)
+    strings.push(r.label)
+  }
 
   return strings
 }

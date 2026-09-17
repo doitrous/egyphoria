@@ -1,28 +1,43 @@
 import { headers } from 'next/headers'
-import { Archivo, Archivo_Narrow } from 'next/font/google'
+import { Archivo, Archivo_Narrow, Roboto, Roboto_Condensed } from 'next/font/google'
 import { SITE_CONFIG, isRtl } from '@/site.config'
 import './globals.css'
 
 // V2-PHASE-9b: Archivo Narrow (the board, H1, every number, buttons) and Archivo (reading text)
 // — self-hosted via next/font/google, `display: 'swap'`, `latin` + `latin-ext` (tr/nl/fr need
-// latin-ext). The ticket also asks for a `greek` subset for `el`, but neither Archivo nor
-// Archivo Narrow ships one on Google Fonts — next/font's own type for both functions only ever
-// accepts `'latin' | 'latin-ext' | 'vietnamese'` (see node_modules/next/dist/compiled/@next/
-// font/dist/google/index.d.ts), and requesting it fails the build. Greek text still renders
-// correctly: it falls back through the CSS font stack below to the platform's default sans/
-// serif, since neither typeface has glyphs to serve for it either way — not a broken page, just
-// not Archivo's own letterforms for `el`. Flagged in the PR body as a ticket/reality mismatch.
+// latin-ext). Neither typeface ships a `greek` subset on Google Fonts at all — next/font's own
+// type for both functions only ever accepts `'latin' | 'latin-ext' | 'vietnamese'` (see
+// node_modules/next/dist/compiled/@next/font/dist/google/index.d.ts) — so `el` pages need a
+// second, real condensed/reading face rather than Archivo's own letterforms.
+//
+// Fix round 1, blocker #4: Roboto Condensed / Roboto both do ship a `greek` subset. Both are
+// loaded `subsets: ['greek']` only (no reason to duplicate latin glyphs Archivo already
+// covers) and appended AFTER the Archivo variables in --serif/--sans (app/globals.css) — CSS
+// font-stack fallback resolves per glyph, not per element, so Latin text still renders in
+// Archivo and only the Greek characters Archivo has no glyphs for fall through to these.
 const archivoNarrow = Archivo_Narrow({
   subsets: ['latin', 'latin-ext'],
   weight: ['500', '700'],
   display: 'swap',
   variable: '--font-board',
 })
+const robotoCondensedGreek = Roboto_Condensed({
+  subsets: ['greek'],
+  weight: ['500', '700'],
+  display: 'swap',
+  variable: '--font-board-greek',
+})
 const archivo = Archivo({
   subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600'],
   display: 'swap',
   variable: '--font-reading',
+})
+const robotoGreek = Roboto({
+  subsets: ['greek'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-reading-greek',
 })
 
 // The direction contract (V2-PHASE-9b, seed e16ed12d) — pinned, not a working note. Ships
@@ -48,7 +63,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const requestHeaders = await headers()
   const lang = requestHeaders.get('x-site-lang') ?? SITE_CONFIG.defaultLocale
   return (
-    <html lang={lang} dir={isRtl(lang) ? 'rtl' : 'ltr'} className={`${archivoNarrow.variable} ${archivo.variable}`}>
+    <html
+      lang={lang}
+      dir={isRtl(lang) ? 'rtl' : 'ltr'}
+      className={`${archivoNarrow.variable} ${archivo.variable} ${robotoCondensedGreek.variable} ${robotoGreek.variable}`}
+    >
       <body>
         <div hidden dangerouslySetInnerHTML={{ __html: DIRECTION_CONTRACT }} />
         {children}

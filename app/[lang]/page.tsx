@@ -6,10 +6,11 @@ import { seo } from '@/lib/seo'
 import { t, dictFor } from '@/lib/i18n'
 import {
   listTrips, listDestinations, getRawDestinations, formatPriceLabel, formatBestMonths,
-  DESTINATION_SUGGESTED_DAYS, TRIP_PRICES, CURRENCY,
+  DESTINATION_SUGGESTED_DAYS, buildTripItemList,
 } from '@/lib/trips'
 import { LOCAL_JOURNAL_SLUGS, getLocalArticle } from '@/lib/journal'
 import { LOCAL_HELP_SLUGS, loadLocalHelpEntry } from '@/lib/help'
+import { reviewRows, type Review } from '@/lib/home-content'
 import DeparturesBoard from '@/components/DeparturesBoard'
 import WeekStrip from '@/components/WeekStrip'
 import DestinationsTable from '@/components/DestinationsTable'
@@ -45,27 +46,21 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   // SEO: an ItemList of the eight TouristTrip rows, in addition to the site-wide TravelAgency
   // entity [lang]/layout.tsx already adds — 14-word-count-keyword-rules.md / the ticket's own
-  // SEO section.
-  const itemList = {
-    '@context': 'https://schema.org', '@type': 'ItemList', name: t(lang, 'home.itemListName'),
-    itemListElement: trips.map((trip, i) => ({
-      '@type': 'ListItem', position: i + 1,
-      item: {
-        '@type': 'TouristTrip', name: trip.name, url: `${origin}/${lang}/trips/${trip.id}`,
-        offers: { '@type': 'Offer', price: TRIP_PRICES[trip.id]?.amount, priceCurrency: CURRENCY },
-      },
-    })),
-  }
+  // SEO section. buildTripItemList lives in lib/trips.ts (not inlined here) so test/home.test.ts
+  // can call the exact same function instead of re-deriving the shape (fix round 1, item #17).
+  const itemList = buildTripItemList(lang, origin, t(lang, 'home.itemListName'))
   const jsonld = [...resolved.jsonld, itemList]
 
   const boardRows = trips.map((trip) => ({
     id: trip.id,
     name: trip.name,
+    location: trip.location,
     href: `/${lang}/trips/${trip.id}`,
     daysLabel: daysText(lang, trip.days),
     price: formatPriceLabel(trip.id, t(lang, 'journeys.from')),
     bestMonths: formatBestMonths(trip.id, monthAbbr, yearRoundLabel),
   }))
+  const tripNames = Object.fromEntries(trips.map((trip) => [trip.id, trip.name]))
 
   const destinationRows = destinations.map((d) => ({
     id: d.id,
@@ -102,8 +97,9 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     ?? (tripCost as Record<string, { config: { title: string } }>).en.config.title
   const toolNotice = { key: 'trip-cost', label: toolTitle, href: `/tools/trip-cost?lang=${lang}` }
 
-  const foundersPhoto = (founders as { photo: string | null }).photo
-  const reviewList = reviews as unknown[]
+  const foundersData = founders as { photo: string | null; alt: string | null }
+  const foundersPhoto = foundersData.photo
+  const reviewList = reviewRows(reviews as Review[])
 
   return (
     <>
@@ -131,8 +127,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         />
       </div>
 
+      {/* Fix round 1, blocker #12/#15: below the fold, so no priority/fetchPriority (lazy-load,
+          next/image's default) — and alt="" since the figcaption already carries the same text,
+          so a screen reader wouldn't otherwise hear it twice. */}
       <figure className="station-photo">
-        <Image src="/assets/giza.jpg" alt={t(lang, 'home.stationCaption')} width={1600} height={720} priority fetchPriority="high" />
+        <Image src="/assets/giza.jpg" alt="" width={1600} height={720} />
         <figcaption>{t(lang, 'home.stationCaption')}</figcaption>
       </figure>
 
@@ -164,15 +163,16 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       <section className="home-section builder-strip" id="builder" aria-labelledby="builder-h2">
         <h2 id="builder-h2">{t(lang, 'home.builderTitle')}</h2>
         <p className="section-lead">{t(lang, 'home.builderIntro')}</p>
-        <TripBuilderForm dict={dict} destinations={destinationsForBuilder} />
+        <TripBuilderForm dict={dict} destinations={destinationsForBuilder} tripNames={tripNames} />
       </section>
 
       <section className="home-section founders-section" aria-labelledby="founders-h2">
         <h2 id="founders-h2">{t(lang, 'home.foundersTitle')}</h2>
         {foundersPhoto && (
           // founders.json's photo path is owner-supplied at deploy time, outside next/image's static asset graph.
+          // alt falls back to the founders' names (behind.founders) when founders.json's own alt is unset.
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={foundersPhoto} alt="" className="founders-photo" />
+          <img src={foundersPhoto} alt={foundersData.alt || t(lang, 'behind.founders')} className="founders-photo" />
         )}
         <p>{t(lang, 'behind.p1')}</p>
         <p>{t(lang, 'behind.p2')}</p>
@@ -182,6 +182,14 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       {reviewList.length > 0 && (
         <section className="home-section" aria-labelledby="reviews-h2">
           <h2 id="reviews-h2">{t(lang, 'reviews.title')}</h2>
+          <ul className="notices-board">
+            {reviewList.map((r, i) => (
+              <li key={i}>
+                <span>{r.quote}</span>
+                <span>{r.label}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

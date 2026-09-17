@@ -3,6 +3,7 @@ import Link from 'next/link'
 export type BoardRow = {
   id: string
   name: string
+  location: string
   href: string
   daysLabel: string
   price: string
@@ -17,6 +18,11 @@ export type BoardRow = {
  * top on first paint (see `.board tbody tr` in app/globals.css) — an exponential ease-out,
  * 40ms-staggered via the inline `--i` custom property, switched off entirely under
  * `prefers-reduced-motion: reduce`.
+ *
+ * Fix round 1, blocker #1: the PLACE column must lead with the actual place, not the poetic
+ * trip title — `row.location` (e.g. "CAIRO · LUXOR · ASWAN") is now the first cell's primary
+ * line, with `row.name` as a secondary line underneath; the link's accessible text carries
+ * both. The ItemList JSON-LD `name` stays the trip name (lib/trips.ts's buildTripItemList).
  */
 export default function DeparturesBoard({
   caption, colPlace, colDays, colFrom, colBestMonths, colGoLabel, rows,
@@ -48,14 +54,18 @@ export default function DeparturesBoard({
           <tr key={row.id} style={{ '--i': i } as React.CSSProperties}>
             <td>
               <Link href={row.href} className="board-row-link">
-                {row.name}
+                <span className="board-row-place">{row.location}</span>
+                <span className="board-row-title">{row.name}</span>
               </Link>
             </td>
             <td>{row.daysLabel}</td>
             <td>{row.price}</td>
             <td>{row.bestMonths}</td>
             <td aria-hidden="true" className="board-arrow">
-              →
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <line x1="1" y1="8" x2="13" y2="8" stroke="currentColor" strokeWidth="2" />
+                <path d="M9 3l5 5-5 5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </td>
           </tr>
         ))}

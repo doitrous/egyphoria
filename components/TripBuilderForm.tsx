@@ -23,8 +23,19 @@ const INTERESTS = ['history', 'culture', 'nature', 'relax'] as const
  * submit-time DOM query below), and a running total row (`selected` state, tracked alongside
  * the existing uncontrolled checkboxes purely for this display) shows days and a real,
  * sourced "from" total via `estimateFromTotal`. None of the existing submit behaviour, props or
- * plan-generation logic changes. */
-export default function TripBuilderForm({ dict, destinations }: { dict: Dict; destinations: Record<string, Destination> }) {
+ * plan-generation logic changes.
+ *
+ * Fix round 1, blocker #3: the running total now calls `estimateFromTotal`'s new
+ * `BuilderEstimate` shape — a real covering trip's price + name, or no number at all — rather
+ * than a summed lower bound that could undercut every bookable trip. `tripNames` (id -> the
+ * lang's trip name) lets it name that trip without pulling in `lib/i18n`'s trips file here. */
+export default function TripBuilderForm({
+  dict, destinations, tripNames,
+}: {
+  dict: Dict
+  destinations: Record<string, Destination>
+  tripNames: Record<string, string>
+}) {
   const [days, setDays] = useState(7)
   const [pace, setPace] = useState<'slow' | 'balanced' | 'full'>('balanced')
   const [error, setError] = useState('')
@@ -63,7 +74,7 @@ export default function TripBuilderForm({ dict, destinations }: { dict: Dict; de
     }
   }
 
-  const total = estimateFromTotal([...selected])
+  const estimate = estimateFromTotal([...selected])
 
   return (
     <form id="builder-form" onSubmit={onSubmit}>
@@ -114,12 +125,23 @@ export default function TripBuilderForm({ dict, destinations }: { dict: Dict; de
       </fieldset>
       <div className="builder-total" aria-live="polite">
         <span>{t('home.builderTotalDays', { n: days })}</span>
-        {total > 0 && <span>{t('home.builderTotalFrom', { amount: `$${total.toLocaleString('en-US')}` })}</span>}
+        {estimate.kind === 'covered' ? (
+          <span>
+            {t('home.builderMatchesTrip', {
+              amount: `$${estimate.amount.toLocaleString('en-US')}`,
+              tripName: tripNames[estimate.tripId] ?? '',
+            })}
+          </span>
+        ) : (
+          <span>{t('home.builderCustomQuote')}</span>
+        )}
       </div>
       <p id="builder-error" role="alert">
         {error}
       </p>
-      <button type="submit">{t('builder.submit')}</button>
+      <button type="submit" className="button-primary">
+        {t('builder.submit')}
+      </button>
       <p className="form-note">{t('builder.formNote')}</p>
     </form>
   )

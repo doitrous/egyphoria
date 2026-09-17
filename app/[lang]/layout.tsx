@@ -6,6 +6,7 @@ import { SITE_CONFIG } from '@/site.config'
 import { seo } from '@/lib/seo'
 import { t } from '@/lib/i18n'
 import { menuFor, LOCALE_LABELS } from '@/lib/nav'
+import { withEntityFallback } from '@/lib/entity'
 import SiteMenu from '@/components/SiteMenu'
 import RevealOnScroll from '@/components/RevealOnScroll'
 import PlanDialog from '@/components/PlanDialog'
@@ -28,19 +29,10 @@ export default async function LangLayout({
   const pathWithoutLang = pathname.startsWith(`/${lang}`) ? pathname.slice(lang.length + 1) || '' : ''
 
   // 01-site-setup.md: every page needs Organization/TravelAgency schema. The hub's own
-  // settings.entity (once configured) already lands in resolved.jsonld; this is the local
-  // fallback so every [lang] page carries it before that hub profile exists — one place, rather
-  // than a per-page check like the one this replaced on /contact.
-  const hasHubEntity = rawResolved.jsonld.some((e) => {
-    const type = (e as { '@type'?: string })['@type']
-    return type === 'TravelAgency' || type === 'Organization'
-  })
-  const localEntity = {
-    '@context': 'https://schema.org', '@type': 'TravelAgency', name: SITE_CONFIG.name,
-    url: SITE_CONFIG.baseUrl, logo: `${SITE_CONFIG.baseUrl}${SITE_CONFIG.logoPath}`,
-    sameAs: SITE_CONFIG.contact.sameAs,
-  }
-  const resolved = hasHubEntity ? rawResolved : { ...rawResolved, jsonld: [...rawResolved.jsonld, localEntity] }
+  // settings.entity (once configured) already lands in resolved.jsonld; withEntityFallback is
+  // the local fallback so every [lang] page carries it before that hub profile exists — one
+  // place (lib/entity.ts), rather than a per-page check like the one this replaced on /contact.
+  const resolved = { ...rawResolved, jsonld: withEntityFallback(rawResolved.jsonld) }
 
   const searches = SITE_CONFIG.popularSearches[lang]?.length ? SITE_CONFIG.popularSearches[lang] : SITE_CONFIG.popularSearches[SITE_CONFIG.defaultLocale]
 

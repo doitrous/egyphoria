@@ -43,7 +43,11 @@ export default function SiteMenu({
         aria-label={open ? closeMenuLabel : openMenuLabel}
         onClick={() => setOpen((v) => !v)}
       >
-        ☰
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
+          <rect width="18" height="2" fill="currentColor" />
+          <rect y="6" width="18" height="2" fill="currentColor" />
+          <rect y="12" width="18" height="2" fill="currentColor" />
+        </svg>
       </button>
       <div id="main-nav" className={open ? 'open' : ''}>
         <ul>
