@@ -60,6 +60,10 @@ export async function providerPages(): Promise<ProviderPage[]> {
  * invented — same principle as lib/hreflang.ts's `localAlternates` floor for hreflang.
  */
 export function localTitle(pathWithoutLang: string, lang: string): string {
+  // V2-PHASE-9b: the home page's <title> is the ticket's own string (already ≤ 60 chars and
+  // already carrying "| Egyphoria" per locale) — it must not also get brandSuffix appended, so
+  // this returns before the generic `titleFor(...) + brandSuffix` fallback below.
+  if (pathWithoutLang === '') return t(lang, 'home.metaTitle')
   const tripMatch = pathWithoutLang.match(/^\/trips\/([a-z0-9-]+)$/)
   if (tripMatch) {
     const trip = getTrip(tripMatch[1], lang)
@@ -77,6 +81,7 @@ export function localTitle(pathWithoutLang: string, lang: string): string {
  * everything else falls back to the site's own one general description (content/i18n's
  * `meta.description`) rather than inventing per-page marketing copy. */
 export function localDescription(pathWithoutLang: string, lang: string): string {
+  if (pathWithoutLang === '') return t(lang, 'home.metaDescription')
   const tripMatch = pathWithoutLang.match(/^\/trips\/([a-z0-9-]+)$/)
   if (tripMatch) {
     const trip = getTrip(tripMatch[1], lang)

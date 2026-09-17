@@ -120,7 +120,8 @@
     "journal": "Journal",
     "rights": "Tous droits réservés.",
     "photography": "Photographie",
-    "madeWith": "Réalisé avec amour pour l'Égypte."
+    "madeWith": "Réalisé avec amour pour l'Égypte.",
+    "help": "Centre d'aide"
   },
   "trip": {
     "back": "Retour à tous les voyages",
@@ -189,5 +190,72 @@
     "share": "Partager ce récit",
     "cta": "Prêt à le découvrir par vous-même ?",
     "ctaButton": "Composer mon voyage"
+  },
+  "home": {
+    "metaTitle": "Voyages Privés en Égypte & Itinéraires | Egyphoria",
+    "metaDescription": "Voyages privés en Égypte, organisés selon vos dates : huit circuits à prix fixe, un créateur d'itinéraire et des conseils fiables en six langues.",
+    "title": "Voyages privés en Égypte, organisés selon vos dates",
+    "standfirst": "Huit voyages privés en Égypte, chacun avec de vraies durées et un vrai prix par personne. Choisissez-en un sur le tableau ci-dessous, ou composez le vôtre — nous expliquons chaque étape en six langues.",
+    "ctaPrimary": "Composer mon itinéraire",
+    "boardCaption": "Tableau des départs : huit voyages privés en Égypte, avec les durées, les prix par personne et les meilleurs mois pour partir.",
+    "colPlace": "Lieu",
+    "colDays": "Jours",
+    "colFrom": "Dès (pp)",
+    "colBestMonths": "Meilleurs mois",
+    "yearRound": "Toute l'année",
+    "months": [
+      "janv.",
+      "févr.",
+      "mars",
+      "avr.",
+      "mai",
+      "juin",
+      "juil.",
+      "août",
+      "sept.",
+      "oct.",
+      "nov.",
+      "déc."
+    ],
+    "stationCaption": "Les pyramides de Gizeh, à la lisière du Caire.",
+    "weekTitle": "Comment se déroule une semaine en Égypte",
+    "weekPara1": "La plupart des primo-visiteurs consacrent sept jours à l'Égypte : assez pour associer les musées du Caire et le plateau de Gizeh à un moment plus lent sur le Nil, sans courir d'un aéroport à l'autre. D'octobre à avril, la chaleur reste agréable partout ; de mai à septembre, cela reste possible, surtout près de la côte, en organisant les journées autour du soleil de midi.",
+    "weekPara2": "Chaque voyage de cette page inclut déjà le transport entre les villes, un guide privé et les hôtels de l'itinéraire — le tableau ci-dessus indique ce qui est compris par personne, sans surprise ajoutée plus tard.",
+    "weekDaySingle": "Jour {n}",
+    "weekDayRange": "Jours {a}–{b}",
+    "weekStopCairo": "Le Caire",
+    "weekStopGiza": "Gizeh",
+    "weekStopLuxor": "Louxor",
+    "weekStopNileAswan": "Le Nil & Assouan",
+    "weekStopRedSeaOrCairo": "Mer Rouge ou Le Caire",
+    "weekConnectionCairoLuxor": "Le Caire → Louxor : environ 1 heure en avion, ou un train de nuit.",
+    "weekConnectionLuxorAswan": "Louxor → Assouan : environ 3 heures par la route ou en train.",
+    "weekTypicalNote": "Trajets habituels — les horaires réels varient selon la saison et la réservation.",
+    "weekSourceLinkLabel": "Comment nous organisons les journées",
+    "destinationsTitle": "Les destinations, selon les jours qu'elles méritent",
+    "destinationsColPlace": "Lieu",
+    "destinationsColDays": "Jours conseillés",
+    "destinationsColFor": "Pour quoi faire",
+    "destinationPurpose": {
+      "cairo": "Le vieux Caire, ses souks et le Musée égyptien.",
+      "giza": "Les pyramides, le Sphinx et le Grand Musée égyptien.",
+      "luxor": "Les temples et la Vallée des Rois, sur le terrain.",
+      "alexandria": "Une journée sur la côte méditerranéenne, loin de la chaleur du désert.",
+      "nile": "Naviguer entre Louxor et Assouan, des temples le long de l'eau.",
+      "desert": "Campements dans le désert Blanc, formations de craie et ciel ouvert.",
+      "red-sea": "Plongée, snorkeling et journées de plage sur la mer Rouge."
+    },
+    "builderTitle": "Composez votre itinéraire",
+    "builderIntro": "Choisissez où vous voulez aller, combien de jours vous avez et votre rythme — nous organisons tout, jour par jour.",
+    "builderTotalDays": "{n} jours",
+    "builderMatchesTrip": "à partir de {amount} par personne — correspond à {tripName}",
+    "builderCustomQuote": "Nous chiffrons les itinéraires combinés à la main.",
+    "foundersTitle": "Trois médecins, un même amour de l'Égypte",
+    "beforeYouGoTitle": "Avant de partir",
+    "noticesToolLabel": "Estimez le coût de votre voyage",
+    "itemListName": "Voyages privés Egyphoria en Égypte"
+  },
+  "reviews": {
+    "title": "Ce que disent les voyageurs"
   }
 }

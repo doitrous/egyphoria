@@ -71,6 +71,20 @@ export function formatPrice(id: string): string {
   return `${p.from ? 'from ' : ''}$${p.amount.toLocaleString('en-US')}`
 }
 
+/**
+ * Locale-aware price label for the homepage departures board (V2-PHASE-9b: "no English leaks
+ * into non-English pages except proper nouns"). `formatPrice` above stays English-only — every
+ * other page that already calls it (trip pages) is unchanged by this ticket — this is only for
+ * the new board, which needs the "from" word in the visitor's own language; `fromWord` is the
+ * caller's already-resolved `t(lang, 'journeys.from')`.
+ */
+export function formatPriceLabel(id: string, fromWord: string): string {
+  const p = TRIP_PRICES[id]
+  if (!p) return ''
+  const amount = `$${p.amount.toLocaleString('en-US')}`
+  return p.from ? `${fromWord} ${amount}` : amount
+}
+
 /** Localized name overrides for the two destinations that have no direct old-site equivalent
  * (giza, nile) plus a narrower "Cairo" name once Giza's own content is split out of it. Real
  * place names only — no invented claims. */
@@ -150,4 +164,76 @@ export function destinationNameEn(id: string): string {
  * comment above for why this is a separate list from the 7-id destination pages. */
 export function getRawDestinations(lang: string): Record<string, RawDestination> {
   return fileFor(lang).destinations
+}
+
+// V2-PHASE-9b (the homepage departures board): best months to travel, per trip. source: the
+// journal post "how many days in Egypt" (content/journal/how-many-days-in-egypt.json) and the
+// help entry "best time to visit Egypt" (content/help/best-time-to-visit-egypt.json) — both say
+// October–April keeps daytime heat comfortable everywhere, May–September still works especially
+// near the coast, and Upper Egypt (Luxor/Aswan) and the desert are the two places that heat
+// hits hardest in summer. Nothing here is invented: Oct–Apr for the Nile/Luxor/desert trips,
+// year-round for the Red Sea coast, Oct–May for Cairo/Giza/Alexandria's milder city/coast climate.
+export type BestMonths = 'year-round' | { fromMonth: number; toMonth: number }
+export const TRIP_BEST_MONTHS: Record<string, BestMonths> = {
+  'egypt-unfolded': { fromMonth: 10, toMonth: 4 },
+  nile: { fromMonth: 10, toMonth: 4 },
+  desert: { fromMonth: 10, toMonth: 4 },
+  'red-sea': 'year-round',
+  'giza-day': { fromMonth: 10, toMonth: 5 },
+  'cairo-day': { fromMonth: 10, toMonth: 5 },
+  'luxor-day': { fromMonth: 10, toMonth: 4 },
+  'alex-day': { fromMonth: 10, toMonth: 5 },
+}
+
+/** `monthAbbr` is the locale's 12 short month names (`content/i18n/<lang>.json`'s `home.months`);
+ * `yearRoundLabel` is `home.yearRound`. Both come from the caller (a server component already
+ * holding `t(lang, ...)`) so this stays a pure function, testable without importing i18n. */
+export function formatBestMonths(id: string, monthAbbr: string[], yearRoundLabel: string): string {
+  const bm = TRIP_BEST_MONTHS[id]
+  if (!bm) return ''
+  if (bm === 'year-round') return yearRoundLabel
+  return `${monthAbbr[bm.fromMonth - 1]}–${monthAbbr[bm.toMonth - 1]}`
+}
+
+// The homepage's "Destinations, by the days they deserve" table (07-content-hub.md link block):
+// suggested days per destination, roughly matching the days the trips touching it already spend
+// there (TRIP_META above) — not a new invented figure, just the existing trip lengths read back
+// per place. A `[min, max]` pair renders as "2–3"; a single number renders as-is.
+export const DESTINATION_SUGGESTED_DAYS: Record<string, number | [number, number]> = {
+  cairo: 2, giza: 1, luxor: [2, 3], alexandria: 1, nile: [2, 3], desert: [2, 3], 'red-sea': 3,
+}
+
+export type BuilderEstimate = { kind: 'covered'; amount: number; tripId: string } | { kind: 'none' }
+
+/**
+ * Fix round 1, blocker #3: the old version summed the cheapest trip touching EACH selected
+ * destination independently, which double-discounts a multi-destination selection — the default
+ * Cairo/Luxor/Aswan selection summed to $1,255, below "Egypt, unfolded" ($1,450), the only real
+ * trip that actually covers all three. A running total must never quote a figure cheaper than
+ * any bookable trip, so this only ever names the cheapest real trip whose own `places` are a
+ * superset of the whole selection. No covering trip → no number, `kind: 'none'` (the caller
+ * shows a "we quote this by hand" line instead of inventing one).
+ */
+export function estimateFromTotal(rawDestinationIds: string[]): BuilderEstimate {
+  if (rawDestinationIds.length === 0) return { kind: 'none' }
+  const covering = TRIP_IDS.filter((id) => rawDestinationIds.every((rid) => TRIP_META[id].places.includes(rid)))
+  if (covering.length === 0) return { kind: 'none' }
+  const tripId = covering.reduce((best, id) => (TRIP_PRICES[id].amount < TRIP_PRICES[best].amount ? id : best))
+  return { kind: 'covered', amount: TRIP_PRICES[tripId].amount, tripId }
+}
+
+/** Builds the homepage's ItemList of TouristTrip/Offer JSON-LD — the actual function
+ * app/[lang]/page.tsx calls, so test/home.test.ts exercises the real code path instead of a
+ * parallel re-derivation of the same shape (fix round 1, item #17). */
+export function buildTripItemList(lang: string, origin: string, itemListName: string) {
+  return {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: itemListName,
+    itemListElement: listTrips(lang).map((trip, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      item: {
+        '@type': 'TouristTrip', name: trip.name, url: `${origin}/${lang}/trips/${trip.id}`,
+        offers: { '@type': 'Offer', price: TRIP_PRICES[trip.id]?.amount, priceCurrency: CURRENCY },
+      },
+    })),
+  }
 }

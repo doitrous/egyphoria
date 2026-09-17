@@ -60,6 +60,46 @@ original six raw keys (`lib/trips.ts`'s `getRawDestinations`) since splitting fo
 reason to fragment the trip planner's own activity pool. `test/trips.test.ts` verifies the split
 loses and duplicates nothing.
 
+## Homepage
+
+`app/[lang]/page.tsx` (V2-PHASE-9b, "The Continental Timetable") is a European-departure-board
+take on the homepage rather than a full-bleed pyramid hero: blue header band, H1 + standfirst +
+yellow "Build my itinerary" CTA, then a real `<table>` departures board of all 8 trips
+(`components/DeparturesBoard.tsx`; PLACE leads with the real place — `trip.location`, e.g. "CAIRO
+· LUXOR · ASWAN" — with the poetic trip title as a smaller line underneath, days/from/best-months/
+→, whole row clickable via a stretched-link `::after`, rows settle in on load — `board-settle` in
+`app/globals.css`, skipped under `prefers-reduced-motion`), a full-bleed Giza station photo
+(lazy-loaded, below the fold), a 7-day timetable strip (`components/WeekStrip.tsx`) explaining how
+a week lays out, a 7-destination table (`components/DestinationsTable.tsx`), the restyled
+itinerary builder (`TripBuilderForm.tsx`) in a blue strip, a founders section reusing the existing
+`behind.*` copy, a reviews section, and a "Before you go" notices board linking every help entry,
+the two journal posts, and the trip-cost tool.
+
+- The founders photo is conditional on `content/founders.json`'s `photo` field (`null` today — no
+  real photo asset exists yet; add one and set the path to show it). Its `alt` field is also
+  `null` today and falls back to the founders' names (`behind.founders`) when unset.
+- The reviews section (`content/reviews.json`) renders nothing while that file is `[]` — add real
+  review objects (`{ quote, name, trip?, date? }`, `lib/home-content.ts`'s `Review` type) to bring
+  it back; no placeholder reviews or ratings were invented.
+- The builder's running total (`lib/trips.ts`'s `estimateFromTotal`) only ever names the cheapest
+  real trip whose own `places` cover the whole selection ("from $1,450 per person — matches Egypt,
+  unfolded") — never a summed lower bound that could undercut every bookable trip. No trip covers
+  the selection → no number, just a "we quote this by hand" line (`home.builderCustomQuote`).
+- All new UI strings live under the `home.*` key in `content/i18n/<lang>.json`.
+  `lib/home-content.ts` is a plain-data mirror of the page's rendered text, used only by
+  `test/home.test.ts`'s word-count check — node's native test runner can't load JSX, so it can't
+  render the real component; keep the two in sync if either changes.
+- Adds an `ItemList` of `TouristTrip`/`Offer` JSON-LD (all 8 trips, `lib/trips.ts`'s
+  `buildTripItemList`) alongside the existing `TravelAgency` entity JSON-LD (`lib/entity.ts`'s
+  `withEntityFallback`, called from `[lang]/layout.tsx`) — both extracted into plain `.ts`
+  functions so `test/home.test.ts` can call the exact functions the page/layout render with,
+  instead of re-deriving their shape in the test.
+- `el` gets real designed letterforms instead of a platform-default fallback: neither `Archivo`
+  nor `Archivo Narrow` ships a `greek` subset on Google Fonts, so `app/layout.tsx` also loads
+  `Roboto`/`Roboto Condensed` (`subsets: ['greek']` only) and appends them after the Archivo
+  variables in `--serif`/`--sans` (`app/globals.css`) — CSS font-stack fallback is per glyph, so
+  Latin text still renders in Archivo and only Greek characters fall through to these.
+
 ## Testing
 
 - `npm test` — `node --test` (native runner, TypeScript stripped, no framework). Covers hreflang
@@ -134,3 +174,12 @@ variable is read at request time.
   trips ~147–168 words against a 500-word Tour floor) — this reuses only the old site's real copy,
   with nothing invented to pad it out; expanding it with genuine content is follow-up work for a
   human writer.
+- `content/founders.json` (`photo: null`, `alt: null`) and `content/reviews.json` (`[]`) are both
+  intentionally empty placeholders — see "Homepage" above.
+- `lib/trips.ts`'s `TRIP_BEST_MONTHS` extrapolates "Oct–May"/"year-round" for the Cairo/Giza/
+  Alexandria/Red Sea entries from the two sourced climate facts (Oct–Apr comfortable everywhere,
+  Red Sea coast mild enough year-round) rather than a month-by-month source for each trip — left
+  as-is (nothing invented outside that documented reasoning), flagging for a human sign-off.
+- `content/reviews.json` reviews, once added, are `{ quote, name, trip?, date? }`
+  (`lib/home-content.ts`'s `Review` type) — no ratings/stars, only what a real review actually
+  carries; have a human confirm that shape before real reviews are written into it.

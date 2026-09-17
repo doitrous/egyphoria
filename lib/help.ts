@@ -6,13 +6,17 @@
 // matching entry here — these five, ported from the old static build's src/content/help.json,
 // are the real questions travelers asked before booking (06-help-page.md), English only (the old
 // site never translated the help center either).
+// V2-PHASE-9b: switched from the `@/` alias to relative imports + explicit `with { type: 'json'
+// }` attributes — lib/home-content.ts (test/home.test.ts) now reaches this module through node's
+// own ESM loader (`npm test`), which understands neither the alias nor an un-attributed JSON
+// import (only Next's bundler does; see lib/trips.ts's identical note). Behaviour is unchanged.
 import { EMPTY_SETTINGS, findHelpEntry, type HelpEntry } from '@omary98/seo-runtime-core'
-import doINeedAVisa from '@/content/help/do-i-need-a-visa-to-visit-egypt.json'
-import bestTimeToVisit from '@/content/help/best-time-to-visit-egypt.json'
-import howMuchDoesATripCost from '@/content/help/how-much-does-a-trip-to-egypt-cost.json'
-import whatShouldIPack from '@/content/help/what-should-i-pack-for-egypt.json'
-import isEgyptSafe from '@/content/help/is-egypt-safe-for-tourists.json'
-import { seo } from './seo'
+import doINeedAVisa from '../content/help/do-i-need-a-visa-to-visit-egypt.json' with { type: 'json' }
+import bestTimeToVisit from '../content/help/best-time-to-visit-egypt.json' with { type: 'json' }
+import howMuchDoesATripCost from '../content/help/how-much-does-a-trip-to-egypt-cost.json' with { type: 'json' }
+import whatShouldIPack from '../content/help/what-should-i-pack-for-egypt.json' with { type: 'json' }
+import isEgyptSafe from '../content/help/is-egypt-safe-for-tourists.json' with { type: 'json' }
+import { seo } from './seo.ts'
 
 type LocalHelpFile = Record<string, Omit<HelpEntry, 'slug' | 'lang'>>
 
@@ -26,7 +30,10 @@ const LOCAL_HELP: Record<string, LocalHelpFile> = {
 
 export const LOCAL_HELP_SLUGS = Object.keys(LOCAL_HELP)
 
-function loadLocalHelpEntry(slug: string, lang: string): HelpEntry | null {
+// Exported for the homepage's "Before you go" notices board (V2-PHASE-9b): it lists the five
+// help entries by question text without needing an async hub lookup for a section that's just a
+// sourced pointer to /help, not the help center itself.
+export function loadLocalHelpEntry(slug: string, lang: string): HelpEntry | null {
   const file = LOCAL_HELP[slug]
   if (!file) return null
   const entry = file[lang] ?? file[Object.keys(file)[0]]
