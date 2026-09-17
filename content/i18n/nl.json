@@ -120,7 +120,8 @@
     "journal": "Journaal",
     "rights": "Alle rechten voorbehouden.",
     "photography": "Fotografie",
-    "madeWith": "Gemaakt met een liefde voor Egypte."
+    "madeWith": "Gemaakt met een liefde voor Egypte.",
+    "help": "Helpcentrum"
   },
   "trip": {
     "back": "Terug naar alle reizen",
@@ -189,5 +190,71 @@
     "share": "Deel dit verhaal",
     "cta": "Klaar om het zelf te zien?",
     "ctaButton": "Ontwerp mijn reis"
+  },
+  "home": {
+    "metaTitle": "Privé Rondreizen Egypte & Reisplannen | Egyphoria",
+    "metaDescription": "Privé rondreizen door Egypte, gepland rond jouw data: acht reizen met vaste prijzen, een reisplanner en eerlijk reisadvies in zes talen.",
+    "title": "Privé rondreizen Egypte, gepland rond jouw data",
+    "standfirst": "Acht privéreizen door Egypte, elk met echte dagen en een echte prijs per persoon. Kies er een uit het bord hieronder, of stel je eigen reis samen — we leggen elke stap uit in zes talen.",
+    "ctaPrimary": "Maak mijn reisplan",
+    "boardCaption": "Vertrekbord: acht privéreizen door Egypte, met dagen, prijzen per persoon en de beste maanden om te reizen.",
+    "colPlace": "Plaats",
+    "colDays": "Dagen",
+    "colFrom": "Vanaf (pp)",
+    "colBestMonths": "Beste maanden",
+    "yearRound": "Het hele jaar",
+    "months": [
+      "jan",
+      "feb",
+      "mrt",
+      "apr",
+      "mei",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "okt",
+      "nov",
+      "dec"
+    ],
+    "stationCaption": "De piramides van Gizeh, aan de rand van Caïro.",
+    "weekTitle": "Zo ziet een week in Egypte eruit",
+    "weekPara1": "De meeste eerste bezoekers trekken zeven dagen uit voor Egypte: genoeg om Caïro's musea en het plateau van Gizeh te combineren met een rustiger stuk aan de Nijl, zonder van luchthaven naar luchthaven te haasten. Van oktober tot april blijft de hitte overal aangenaam; van mei tot september kan het ook, vooral aan de kust, als je rond het middaguur wat rustiger inplant.",
+    "weekPara2": "Elke reis op deze pagina bevat al vervoer tussen de steden, een privégids en de hotels op de route — het bord hierboven toont wat er per persoon bij zit, zonder verrassingen later.",
+    "weekDaySingle": "Dag {n}",
+    "weekDayRange": "Dag {a}–{b}",
+    "weekStopCairo": "Caïro",
+    "weekStopGiza": "Gizeh",
+    "weekStopLuxor": "Luxor",
+    "weekStopNileAswan": "De Nijl & Aswan",
+    "weekStopRedSeaOrCairo": "Rode Zee of Caïro",
+    "weekConnectionCairoLuxor": "Caïro → Luxor: ongeveer 1 uur vliegen, of een nachttrein.",
+    "weekConnectionLuxorAswan": "Luxor → Aswan: ongeveer 3 uur over de weg of per trein.",
+    "weekTypicalNote": "Gangbare verbindingen — de exacte tijden verschillen per seizoen en boeking.",
+    "weekSourceLinkLabel": "Hoe wij de dagen indelen",
+    "destinationsTitle": "Bestemmingen, naar de dagen die ze verdienen",
+    "destinationsColPlace": "Plaats",
+    "destinationsColDays": "Aanbevolen dagen",
+    "destinationsColFor": "Waarvoor",
+    "destinationPurpose": {
+      "cairo": "Oud-Caïro, de soeks en het Egyptisch Museum.",
+      "giza": "De piramides, de Sfinx en het Grand Egyptian Museum.",
+      "luxor": "Tempels en het Vallei der Koningen, ter plekke.",
+      "alexandria": "Een dag aan de Middellandse Zee, weg van de woestijnhitte.",
+      "nile": "Varen tussen Luxor en Aswan, tempels langs het water.",
+      "desert": "Kampementen in de Witte Woestijn, kalkformaties en open lucht.",
+      "red-sea": "Duiken, snorkelen en strand aan de Rode Zee."
+    },
+    "builderTitle": "Stel je reisplan samen",
+    "builderIntro": "Kies waar je heen wilt, hoeveel dagen je hebt en je tempo — wij zetten het dag voor dag op een rij.",
+    "builderTotalDays": "{n} dagen",
+    "builderTotalFrom": "vanaf {amount} per persoon",
+    "foundersTitle": "Drie artsen, één liefde voor Egypte",
+    "beforeYouGoTitle": "Voor je vertrekt",
+    "noticesToolLabel": "Bereken je eigen reiskosten",
+    "itemListName": "Privéreizen van Egyphoria naar Egypte"
+  },
+  "reviews": {
+    "title": "Wat reizigers zeggen"
   }
 }

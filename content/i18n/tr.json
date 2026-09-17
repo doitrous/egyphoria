@@ -120,7 +120,8 @@
     "journal": "Günlük",
     "rights": "Tüm hakları saklıdır.",
     "photography": "Fotoğraf",
-    "madeWith": "Mısır'a duyulan sevgiyle hazırlandı."
+    "madeWith": "Mısır'a duyulan sevgiyle hazırlandı.",
+    "help": "Yardım merkezi"
   },
   "trip": {
     "back": "Tüm yolculuklara dön",
@@ -189,5 +190,71 @@
     "share": "Bu hikâyeyi paylaş",
     "cta": "Kendi gözlerinizle görmeye hazır mısınız?",
     "ctaButton": "Yolculuğumu tasarla"
+  },
+  "home": {
+    "metaTitle": "Özel Mısır Turları ve Gezi Planları | Egyphoria",
+    "metaDescription": "Tarihlerinize göre planlanan özel Mısır turları: sabit fiyatlı sekiz gezi, bir gezi planlayıcı ve altı dilde güvenilir seyahat tavsiyeleri.",
+    "title": "Özel Mısır turları, sizin tarihlerinize göre planlanır",
+    "standfirst": "Mısır'da sekiz özel gezi, her biri gerçek gün sayısı ve kişi başı gerçek fiyatla. Aşağıdaki tarifeden birini seçin veya kendi gezinizi oluşturun — her adımı altı dilde açıklıyoruz.",
+    "ctaPrimary": "Gezi planımı oluştur",
+    "boardCaption": "Kalkış tarifesi: gün sayısı, kişi başı fiyat ve gitmek için en iyi aylarla birlikte sekiz özel Mısır gezisi.",
+    "colPlace": "Yer",
+    "colDays": "Gün",
+    "colFrom": "Başlangıç (kişi başı)",
+    "colBestMonths": "En iyi aylar",
+    "yearRound": "Yıl boyunca",
+    "months": [
+      "Oca",
+      "Şub",
+      "Mar",
+      "Nis",
+      "May",
+      "Haz",
+      "Tem",
+      "Ağu",
+      "Eyl",
+      "Eki",
+      "Kas",
+      "Ara"
+    ],
+    "stationCaption": "Kahire'nin kenarındaki Giza Piramitleri.",
+    "weekTitle": "Mısır'da bir hafta nasıl geçer",
+    "weekPara1": "İlk kez gidenlerin çoğu Mısır için yedi gün ayırır: Kahire'nin müzelerini ve Giza platosunu, havaalanları arasında koşuşturmadan Nil üzerinde daha sakin bir bölümle birleştirmeye yeter. Ekim-Nisan arasında sıcaklık her yerde rahat kalır; Mayıs-Eylül arasında da, özellikle kıyıya yakın yerlerde, öğle sıcağına göre planlama yaparsanız yine iyi gider.",
+    "weekPara2": "Bu sayfadaki her gezi, şehirler arası ulaşımı, özel bir rehberi ve rotanın otellerini zaten içerir — yukarıdaki tarifede kişi başı neyin dahil olduğu yazar, sonradan eklenen bir sürpriz olmaz.",
+    "weekDaySingle": "{n}. Gün",
+    "weekDayRange": "{a}–{b}. Gün",
+    "weekStopCairo": "Kahire",
+    "weekStopGiza": "Giza",
+    "weekStopLuxor": "Luksor",
+    "weekStopNileAswan": "Nil & Asvan",
+    "weekStopRedSeaOrCairo": "Kızıldeniz veya Kahire",
+    "weekConnectionCairoLuxor": "Kahire → Luksor: uçakla yaklaşık 1 saat, veya gece treni.",
+    "weekConnectionLuxorAswan": "Luksor → Asvan: karayoluyla veya trenle yaklaşık 3 saat.",
+    "weekTypicalNote": "Tipik bağlantılar — gerçek süreler mevsime ve rezervasyona göre değişir.",
+    "weekSourceLinkLabel": "Günleri nasıl planlıyoruz",
+    "destinationsTitle": "Hak ettikleri güne göre destinasyonlar",
+    "destinationsColPlace": "Yer",
+    "destinationsColDays": "Önerilen gün",
+    "destinationsColFor": "Ne için",
+    "destinationPurpose": {
+      "cairo": "Eski Kahire, çarşıları ve Mısır Müzesi.",
+      "giza": "Piramitler, Sfenks ve Büyük Mısır Müzesi.",
+      "luxor": "Tapınaklar ve Krallar Vadisi, yerinde görülür.",
+      "alexandria": "Çöl sıcağından uzak, Akdeniz kıyısında bir gün.",
+      "nile": "Luksor ile Asvan arasında, su kenarındaki tapınaklar boyunca yelken.",
+      "desert": "Beyaz Çöl'de kamplar, tebeşir oluşumları ve açık gökyüzü.",
+      "red-sea": "Kızıldeniz kıyısında dalış, şnorkelle yüzme ve plaj günleri."
+    },
+    "builderTitle": "Gezi planınızı oluşturun",
+    "builderIntro": "Nereye gitmek istediğinizi, kaç gününüz olduğunu ve temponuzu seçin — gün gün biz düzenleyelim.",
+    "builderTotalDays": "{n} gün",
+    "builderTotalFrom": "kişi başı {amount}'den başlar",
+    "foundersTitle": "Üç doktor, Mısır'a tek bir sevgi",
+    "beforeYouGoTitle": "Gitmeden önce",
+    "noticesToolLabel": "Kendi gezi maliyetinizi hesaplayın",
+    "itemListName": "Egyphoria özel Mısır gezileri"
+  },
+  "reviews": {
+    "title": "Gezginler ne diyor"
   }
 }

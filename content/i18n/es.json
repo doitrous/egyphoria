@@ -120,7 +120,8 @@
     "journal": "Diario",
     "rights": "Todos los derechos reservados.",
     "photography": "Fotografía",
-    "madeWith": "Hecho con amor por Egipto."
+    "madeWith": "Hecho con amor por Egipto.",
+    "help": "Centro de ayuda"
   },
   "trip": {
     "back": "Volver a todos los viajes",
@@ -189,5 +190,71 @@
     "share": "Compartir esta historia",
     "cta": "¿Listo para verlo por ti mismo?",
     "ctaButton": "Diseñar mi viaje"
+  },
+  "home": {
+    "metaTitle": "Viajes Privados a Egipto e Itinerarios | Egyphoria",
+    "metaDescription": "Viajes privados a Egipto, planificados según tus fechas: ocho itinerarios a precio fijo, un creador de itinerarios y consejos fiables en seis idiomas.",
+    "title": "Viajes privados a Egipto, planificados según tus fechas",
+    "standfirst": "Ocho viajes privados por Egipto, cada uno con días reales y un precio real por persona. Elige uno del tablero de abajo o crea el tuyo propio — explicamos cada paso en seis idiomas.",
+    "ctaPrimary": "Crear mi itinerario",
+    "boardCaption": "Tablero de salidas: ocho viajes privados a Egipto, con días, precios por persona y los mejores meses para viajar.",
+    "colPlace": "Lugar",
+    "colDays": "Días",
+    "colFrom": "Desde (pp)",
+    "colBestMonths": "Mejores meses",
+    "yearRound": "Todo el año",
+    "months": [
+      "ene",
+      "feb",
+      "mar",
+      "abr",
+      "may",
+      "jun",
+      "jul",
+      "ago",
+      "sep",
+      "oct",
+      "nov",
+      "dic"
+    ],
+    "stationCaption": "Las pirámides de Guiza, en el límite de El Cairo.",
+    "weekTitle": "Cómo se organiza una semana en Egipto",
+    "weekPara1": "La mayoría de quienes visitan Egipto por primera vez dedican siete días: suficiente para combinar los museos de El Cairo y la meseta de Guiza con unos días más tranquilos en el Nilo, sin correr de aeropuerto en aeropuerto. De octubre a abril el calor se mantiene agradable en todas partes; de mayo a septiembre también funciona, sobre todo cerca de la costa, planificando alrededor del calor del mediodía.",
+    "weekPara2": "Cada viaje de esta página ya incluye el transporte entre ciudades, un guía privado y los hoteles de la ruta — el tablero de arriba indica qué está incluido por persona, sin sorpresas añadidas después.",
+    "weekDaySingle": "Día {n}",
+    "weekDayRange": "Días {a}–{b}",
+    "weekStopCairo": "El Cairo",
+    "weekStopGiza": "Guiza",
+    "weekStopLuxor": "Luxor",
+    "weekStopNileAswan": "El Nilo y Asuán",
+    "weekStopRedSeaOrCairo": "Mar Rojo o El Cairo",
+    "weekConnectionCairoLuxor": "El Cairo → Luxor: alrededor de 1 hora en avión, o un tren nocturno.",
+    "weekConnectionLuxorAswan": "Luxor → Asuán: alrededor de 3 horas por carretera o en tren.",
+    "weekTypicalNote": "Conexiones habituales — los tiempos reales varían según la temporada y la reserva.",
+    "weekSourceLinkLabel": "Cómo planificamos los días",
+    "destinationsTitle": "Destinos, según los días que merecen",
+    "destinationsColPlace": "Lugar",
+    "destinationsColDays": "Días sugeridos",
+    "destinationsColFor": "Para qué",
+    "destinationPurpose": {
+      "cairo": "El Cairo antiguo, sus zocos y el Museo Egipcio.",
+      "giza": "Las pirámides, la Esfinge y el Gran Museo Egipcio.",
+      "luxor": "Templos y el Valle de los Reyes, sobre el terreno.",
+      "alexandria": "Un día en la costa mediterránea, lejos del calor del desierto.",
+      "nile": "Navegando entre Luxor y Asuán, templos junto al agua.",
+      "desert": "Campamentos en el Desierto Blanco, formaciones de tiza y cielo abierto.",
+      "red-sea": "Buceo, esnórquel y días de playa en la costa del Mar Rojo."
+    },
+    "builderTitle": "Crea tu itinerario",
+    "builderIntro": "Elige a dónde quieres ir, cuántos días tienes y tu ritmo — nosotros lo organizamos día por día.",
+    "builderTotalDays": "{n} días",
+    "builderTotalFrom": "desde {amount} por persona",
+    "foundersTitle": "Tres médicos, un mismo amor por Egipto",
+    "beforeYouGoTitle": "Antes de viajar",
+    "noticesToolLabel": "Calcula el coste de tu propio viaje",
+    "itemListName": "Viajes privados de Egyphoria a Egipto"
+  },
+  "reviews": {
+    "title": "Lo que dicen los viajeros"
   }
 }
